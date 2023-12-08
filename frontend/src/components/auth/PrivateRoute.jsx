@@ -3,17 +3,23 @@ import { useAuthContext } from "@asgardeo/auth-react";
 import React, { useEffect, useState } from 'react';
 
 export const PrivateRoute = ({ children, allowedRoles }) => {
-    
     const { state, getBasicUserInfo, signOut } = useAuthContext();
-    const [userRole, setUserRole] = useState({});
+    const [userRole, setUserRole] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+  
     useEffect(() => {
-        getBasicUserInfo().then((info) => {
-            setUserRole(info.applicationRoles);
-        });
+      getBasicUserInfo().then((info) => {
+        setUserRole(info.applicationRoles);
+        setIsLoading(false);
+      });
     }, []);
-    const isAuthorized = state.isAuthenticated && allowedRoles.includes(userRole)
-    console.log("userRole", userRole);
-    console.log("isAuthorized", isAuthorized);
-    return isAuthorized ? children : <Navigate to="/login" />;
-    // return children;
-};
+  
+    if (isLoading) {
+      return <Flex>Loading...</Flex>;
+    }
+  
+    const isAuthorized = state.isAuthenticated && allowedRoles.includes(userRole);
+  
+    return isAuthorized ? children : <div>Not Authorized</div>;    // return isAuthorized ? children : <Navigate to="/login" />;
+  };
+  
