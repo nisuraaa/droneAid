@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 import { useAuthContext } from "@asgardeo/auth-react";
 import { useNavigate } from "react-router-dom";
+import { Flex } from '@chakra-ui/react';
+
 const Overview = () => {
     const navigate = useNavigate();
     const { state, getBasicUserInfo,signOut } = useAuthContext();
@@ -12,8 +14,7 @@ const Overview = () => {
 
     return (
         <>
-            <div>Admin Overview</div>
-            <button onClick={() => signOut()}>Logout</button>
+      TEST PAGE
         </>
 
     )

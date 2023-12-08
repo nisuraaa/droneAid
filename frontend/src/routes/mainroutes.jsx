@@ -7,6 +7,8 @@ import Landing from '../pages/Landing.jsx'
 import Login from '../pages/Login.jsx'
 import Overview from '../pages/admin/Overview.jsx'
 
+import PanelLayout from "../pages/PanelLayout.jsx";
+
 const router = createBrowserRouter([
     {
         path: "/",
@@ -20,13 +22,13 @@ const router = createBrowserRouter([
     {
         path: "/admin",
         element: <PrivateRoute allowedRoles={["administrator"]}>
-            <Overview />
+           <PanelLayout />
         </PrivateRoute>,
     },
     {
         path: "/pharma",
         element: <PrivateRoute allowedRoles={["pharma"]}>
-            <Overview />
+           <PanelLayout />
         </PrivateRoute>,
     },
 ]);
