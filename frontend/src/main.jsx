@@ -5,7 +5,7 @@ import '@fontsource/rubik/700.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { AuthContextProvider } from './context/AuthContext.jsx';
+
 
 
 import { AuthProvider } from "@asgardeo/auth-react";
