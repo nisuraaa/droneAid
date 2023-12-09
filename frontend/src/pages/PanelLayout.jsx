@@ -1,11 +1,130 @@
 import React, { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Flex, Image, Text, VStack, Card, Grid, GridItem, Heading, Input,Button } from '@chakra-ui/react'
+import {
+    Flex, Image, Text, VStack, Card, Grid, GridItem, Heading, Input, Button, Table,
+    Thead,
+    Box,
+    Tbody,
+    Tfoot,
+    Tr,
+    Tag,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+} from '@chakra-ui/react'
 import { useAuthContext } from "@asgardeo/auth-react";
 import Logo from '../assets/droneAid.png'
 import Topbar from '../components/Topbar';
-
+import DroneImg from '../assets/uav-quadcopter.svg'
 const PanelLayout = () => {
+    const dronelist = [
+        {
+            id: 1,
+            uid: 'drone1',
+            status: 'Idle'
+        },
+        {
+            id: 2,
+            uid: 'drone2',
+            status: 'online'
+        },
+        {
+            id: 3,
+            uid: 'drone3',
+            status: 'online'
+        },
+        {
+            id: 4,
+            uid: 'drone4',
+            status: 'online'
+        },
+        {
+            id: 5,
+            uid: 'drone5',
+            status: 'online'
+        },
+        {
+            id: 6,
+            uid: 'drone6',
+            status: 'online'
+        },
+        {
+            id: 7,
+            uid: 'drone7',
+            status: 'online'
+        },
+        {
+            id: 8,
+            uid: 'drone8',
+            status: 'online'
+        },
+        {
+            id: 9,
+            uid: 'drone9',
+            status: 'online'
+        },
+        {
+            id: 10,
+            uid: 'drone10',
+            status: 'online'
+        },
+        {
+            id: 11,
+            uid: 'drone11',
+            status: 'online'
+        },
+        {
+            id: 12,
+            uid: 'drone12',
+            status: 'online'
+        },
+        {
+            id: 13,
+            uid: 'drone13',
+            status: 'online'
+        },
+        {
+            id: 14,
+            uid: 'drone14',
+            status: 'online'
+        },
+        {
+            id: 15,
+            uid: 'drone15',
+            status: 'online'
+        },
+        {
+            id: 16,
+            uid: 'drone16',
+            status: 'online'
+        },
+        {
+            id: 17,
+            uid: 'drone17',
+            status: 'online'
+        },
+        {
+            id: 18,
+            uid: 'drone18',
+            status: 'online'
+        },
+        {
+            id: 19,
+            uid: 'drone19',
+            status: 'online'
+        },
+        {
+            id: 20,
+            uid: 'drone20',
+            status: 'online'
+        },
+        {
+            id: 21,
+            uid: 'drone21',
+            status: 'online'
+        }
+    ];
     const [userInfo, setUserInfo] = useState(null);
     const { state, getBasicUserInfo, signOut } = useAuthContext();
 
@@ -23,28 +142,73 @@ const PanelLayout = () => {
             <Flex flex={1} width={'100%'} mt={'100px'} backgroundColor={'#F1F1F1'} justifyContent={'space-between'} p={'0px 30px'} alignItems={'center'} >
                 <Card w={'100%'} height={'95%'} variant={'solid'} >
 
-                    <Grid height={'100%'} templateColumns="repeat(3, 1fr)" w={'100%'} gap={6}>
+                    <Grid height={'100%'} templateColumns="repeat(5, 1fr)" w={'100%'} gap={6}>
                         <GridItem variant={'unstyled'}
-                            flex={1} colSpan={1} p={'40px'}
-                        // borderRight={
-                        //     '1px solid #E5E7EB'
-                        // }
+                            flex={1} colSpan={2} p={'40px'}
+                            borderRight={
+                                '1px solid #E5E7EB'
+                            }
                         >
                             <Flex justifyContent={'space-between'} mb={'20px'} alignItems={'center'}
                             >
-                                
-                                <Heading mb={'20px'} >
+
+                                <Heading >
                                     <Text fontSize={'18px'}>Drones</Text>
                                 </Heading>
-                                <Button>Add Drone</Button>
+                                <Button colorScheme='blue'
+                                >Add Drone</Button>
                             </Flex>
                             <Input placeholder="Search" />
+                            <Flex overflowY="auto" flex={1} height={'65vh'}>
+                                <Table variant='simple' >
 
+                                    <Thead position="sticky" top={0} backgroundColor={'white'}>
+                                        <Tr>
+                                            <Th>Drone UID</Th>
+                                            <Th>Status</Th>
+
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {
+                                            dronelist.map((item) => (
+                                                <Tr key={item.id} sx={{
+                                                    '&:hover': {
+                                                        backgroundColor: '#F3F4F6'
+                                                    }
+                                                }}
+                                                    onClick={
+                                                        () => {
+                                                            console.log('clicked' + item.id)
+                                                        }
+                                                    }
+                                                >
+
+                                                    <Td>{item.uid}</Td>
+                                                    <Td>
+                                                        <Tag>
+                                                            {item.status}
+                                                        </Tag>
+                                                    </Td>
+
+                                                </Tr>
+                                            ))
+                                        }
+
+                                    </Tbody>
+
+                                </Table>
+                            </Flex>
 
                         </GridItem>
 
-                        <GridItem colSpan={2} >
-                            <Input placeholder="Search" />
+                        <GridItem flexDir={
+                            'column'
+                        } display={'flex'} flex={1} colSpan={3} height={'100%'} justifyContent={'center'} alignItems={'center'} p={'40px'}>
+                            <Image src={DroneImg} width={'50%'} opacity={0.1} />
+                            <Text>
+                                Select a drone from the list to view its details
+                            </Text>
 
                         </GridItem>
                     </Grid>
