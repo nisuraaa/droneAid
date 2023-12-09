@@ -159,47 +159,7 @@ const PanelLayout = () => {
                                 >Add Drone</Button>
                             </Flex>
                             <Input placeholder="Search" />
-                            <Flex overflowY="auto" flex={1} height={'65vh'}>
-                                <Table variant='simple' >
-
-                                    <Thead position="sticky" top={0} backgroundColor={'white'}>
-                                        <Tr>
-                                            <Th>Drone UID</Th>
-                                            <Th>Status</Th>
-
-                                        </Tr>
-                                    </Thead>
-                                    <Tbody>
-                                        {
-                                            dronelist.map((item) => (
-                                                <Tr key={item.id} sx={{
-                                                    '&:hover': {
-                                                        backgroundColor: '#F3F4F6'
-                                                    }
-                                                }}
-                                                    onClick={
-                                                        () => {
-                                                            console.log('clicked' + item.id)
-                                                        }
-                                                    }
-                                                >
-
-                                                    <Td>{item.uid}</Td>
-                                                    <Td>
-                                                        <Tag>
-                                                            {item.status}
-                                                        </Tag>
-                                                    </Td>
-
-                                                </Tr>
-                                            ))
-                                        }
-
-                                    </Tbody>
-
-                                </Table>
-                            </Flex>
-
+                            
                         </GridItem>
 
                         <GridItem flexDir={
