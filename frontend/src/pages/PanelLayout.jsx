@@ -143,29 +143,32 @@ const PanelLayout = () => {
                 <Card w={'100%'} height={'100%'} variant={'solid'} >
 
                     <Grid height={'100%'} templateColumns="repeat(5, 1fr)" w={'100%'} gap={6}>
-                        <GridItem variant={'unstyled'} display={'flex'} flexDirection={'column'} height={'100%'}
+                        <GridItem overflowY={'scroll'} maxHeight={'90vh'}
+                            variant={'unstyled'} display={'flex'} flexDirection={'column'} height={'100%'}
                             colSpan={2} p={'20px'}
                             borderRight={
                                 '1px solid #E5E7EB'
                             }>
+                                <Flex flexDirection={'column'} >
+
                             <Flex justifyContent={'space-between'} mb={'20px'} alignItems={'center'}>
                                 <Heading >
                                     <Text fontSize={'18px'}>Drones</Text>
                                 </Heading>
-                                <Button colorScheme='blue'
-                                >Add Drone</Button>
+                                <Button colorScheme='blue'>Add Drone</Button>
                             </Flex>
                             <Input placeholder="Search" />
+                                </Flex>
                             <Box
                                 // Use 'auto' to show scrollbar only when needed
-                                overflowY={'auto'}
+
                                 // backgroundColor={'#F3F4F6'}
                                 height={'100%'}
                                 flex={1}
-                                maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
+                                // maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
                                 p={'10px'}  // Add padding to the Box
                             >
-                               <Table variant="simple">
+                                <Table variant="simple">
                                     <Thead>
                                         <Tr>
                                             <Th>UID</Th>
