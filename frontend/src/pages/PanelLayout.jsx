@@ -4,8 +4,11 @@ import {
     Flex, Image, Text, VStack, Card, Grid, GridItem, Heading, Input, Button, Table,
     Thead,
     Box,
+    InputGroup,
     Tbody,
+    Select,
     Tfoot,
+    FormLabel,
     Tr,
     Tag,
     Th,
@@ -149,16 +152,28 @@ const PanelLayout = () => {
                             borderRight={
                                 '1px solid #E5E7EB'
                             }>
-                                <Flex flexDirection={'column'} >
+                            <Flex position={'sticky'} top={0} backgroundColor={'white'} flexDirection={'column'} >
 
-                            <Flex justifyContent={'space-between'} mb={'20px'} alignItems={'center'}>
-                                <Heading >
-                                    <Text fontSize={'18px'}>Drones</Text>
-                                </Heading>
-                                <Button colorScheme='blue'>Add Drone</Button>
-                            </Flex>
-                            <Input placeholder="Search" />
+                                <Flex justifyContent={'space-between'} mb={'20px'} alignItems={'center'}>
+                                    <Heading >
+                                        <Text fontSize={'18px'}>Drones</Text>
+                                    </Heading>
+                                    <Button colorScheme='blue'>Add Drone</Button>
                                 </Flex>
+
+                                <Flex gap={'5px'}>
+                                <Input width={'70%'} placeholder="Search" />
+                                <InputGroup width={'30%'}>
+                               
+                                <Select >
+                                    <option value="option1">Status</option>
+                                    <option value="option2">UID</option>
+                                </Select>
+                                </InputGroup>
+
+
+                                </Flex>
+                            </Flex>
                             <Box
                                 // Use 'auto' to show scrollbar only when needed
 
