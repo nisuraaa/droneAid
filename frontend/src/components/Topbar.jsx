@@ -60,7 +60,7 @@ const Topbar = () => {
                     <Flex gap={'5px'} alignItems={'center'} backgroundColor={
                         'rgba(255, 255, 255, 0.1)'}
 
-                        p={'10px'} borderRadius={'10px'}
+                        borderRadius={'10px'}
                     >
 
                         <MenuButton as={Avatar} src={'https://picsum.photos/100/200'} borderRadius={'10px'} p={'5px'} />

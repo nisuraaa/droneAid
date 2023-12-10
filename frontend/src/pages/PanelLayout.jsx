@@ -139,8 +139,8 @@ const PanelLayout = () => {
 
         <Flex height={'100vh'} width={'100vw'} backgroundColor={'#F3F4F6'} justifyContent={'flex-start'} flexDirection={'column'} alignItems={'center   '} >
             <Topbar />
-            <Flex flex={1} width={'100%'} mt={'0px'} backgroundColor={'#F1F1F1'} alignItems={'center'} justifyContent={'space-between'} p={'0px 0px'} alignItems={'center'} >
-                <Card w={'97%'} height={'95%'} variant={'solid'} >
+            <Flex flex={1} width={'100%'} mt={'0px'} backgroundColor={'#F1F1F1'} alignItems={'center'} justifyContent={'space-between'} p={'0px 0px'}  >
+                <Card w={'100%'} height={'100%'} variant={'solid'} >
 
                     <Grid height={'100%'} templateColumns="repeat(5, 1fr)" w={'100%'} gap={6}>
                         <GridItem variant={'unstyled'} display={'flex'} flexDirection={'column'} height={'100%'}
@@ -159,32 +159,28 @@ const PanelLayout = () => {
                             <Box
                                 // Use 'auto' to show scrollbar only when needed
                                 overflowY={'auto'}
-                                backgroundColor={'#F3F4F6'}
+                                // backgroundColor={'#F3F4F6'}
                                 height={'100%'}
                                 flex={1}
-                                maxHeight={'calc(100vh - 15rem)'}  // Adjust the maxHeight as needed
+                                maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
                                 p={'10px'}  // Add padding to the Box
                             >
-                                {dronelist.map((drone) => {
-                                    return (
-                                        <Flex
-                                            key={drone.id}
-                                            justifyContent={'space-between'}
-                                            alignItems={'center'}
-                                            p={'10px'}
-                                            borderRadius={'10px'}
-                                            backgroundColor={'white'}
-                                            mb={'10px'}
-                                            cursor={'pointer'}
-                                        >
-                                            <Flex alignItems={'center'}>
-                                                <Image src={DroneImg} height={'50px'} width={'50px'} />
-                                                <Text ml={'10px'}>{drone.uid}</Text>
-                                            </Flex>
-                                            <Tag colorScheme={drone.status === 'online' ? 'green' : 'red'}>{drone.status}</Tag>
-                                        </Flex>
-                                    );
-                                })}
+                               <Table variant="simple">
+                                    <Thead>
+                                        <Tr>
+                                            <Th>UID</Th>
+                                            <Th>Status</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {dronelist.map((drone) => (
+                                            <Tr key={drone.id}>
+                                                <Td>{drone.uid}</Td>
+                                                <Td><Tag size={'sm'}>{drone.status}</Tag></Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
                             </Box>
                         </GridItem>
 
