@@ -139,7 +139,7 @@ const PanelLayout = () => {
 
         <Flex height={'100vh'} width={'100vw'} backgroundColor={'#F3F4F6'} justifyContent={'center'} flexDirection={'column'} alignItems={'center   '} >
             <Topbar />
-            <Flex flex={1} width={'100%'} mt={'100px'} backgroundColor={'#F1F1F1'} justifyContent={'space-between'} p={'0px 30px'} alignItems={'center'} >
+            <Flex flex={1} width={'100%'} mt={'0px'} backgroundColor={'#F1F1F1'} justifyContent={'space-between'} p={'0px 0px'} alignItems={'center'} >
                 <Card w={'100%'} height={'95%'} variant={'solid'} >
 
                     <Grid height={'100%'} templateColumns="repeat(5, 1fr)" w={'100%'} gap={6}>
@@ -159,7 +159,7 @@ const PanelLayout = () => {
                                 >Add Drone</Button>
                             </Flex>
                             <Input placeholder="Search" />
-                            
+
                         </GridItem>
 
                         <GridItem flexDir={
