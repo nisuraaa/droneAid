@@ -45,7 +45,7 @@ const Topbar = () => {
 
     return (
         <Flex zIndex={100}
-            color={'white'} height={'58px'} top={0} width={'100%'} justifyContent={'center'} alignItems={'center'}  >
+            color={'white'} height={'58px'}  width={'100%'} justifyContent={'center'} alignItems={'center'}  >
             <Flex width={'100%'} height={'100%'} background={'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)'}
                 justifyContent={'space-between'} p={'0px 10px'} pl={'30px'} alignItems={'center'} >
                 <Flex gap={'40px'} justifyContent={'center'} alignItems={'center'}>
