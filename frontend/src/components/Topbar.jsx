@@ -2,6 +2,10 @@ import React from 'react'
 import {
     useEffect, useState
 } from 'react'
+
+import { NavLink } from "react-router-dom";
+import './topbar.css';
+
 import {
     Flex, Image, Text, HStack, Menu,
     MenuButton,
@@ -45,14 +49,18 @@ const Topbar = () => {
 
     return (
         <Flex zIndex={100}
-            color={'white'} height={'58px'}  width={'100%'} justifyContent={'center'} alignItems={'center'}  >
-            <Flex width={'100%'} height={'100%'} background={'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)'}
+            color={'white'} height={'58px'} width={'100%'} justifyContent={'center'} alignItems={'center'}  >
+            <Flex width={'99%'} height={'100%'} background={'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)'} borderBottomLeftRadius={'10px'} borderBottomRightRadius={'10px'}
                 justifyContent={'space-between'} p={'0px 10px'} pl={'30px'} alignItems={'center'} >
                 <Flex gap={'40px'} justifyContent={'center'} alignItems={'center'}>
                     <Image src={Logo} height={'80%'} width={'180'} />
                     <HStack spacing={8} alignItems={'center'}>
-                        <Text>Overview</Text>
-                        <Text>My Fleet</Text>
+                        <NavLink to="/admin/overview" className={({ isActive, isPending }) =>
+                            isPending ? "pending" : isActive ? "active" : ""
+                        }>Overview</NavLink>
+                        <NavLink to="/admin/fleet" className={({ isActive, isPending }) =>
+                            isPending ? "pending" : isActive ? "active" : ""
+                        }>My Fleet</NavLink>
                     </HStack>
                 </Flex>
                 <Menu >

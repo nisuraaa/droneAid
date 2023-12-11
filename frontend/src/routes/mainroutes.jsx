@@ -24,6 +24,16 @@ const router = createBrowserRouter([
         element: <PrivateRoute allowedRoles={["administrator"]}>
            <PanelLayout />
         </PrivateRoute>,
+        children: [
+            {
+                path: "fleet",
+                element: <Overview />,
+            },
+            {
+                path: "overview",
+                // element: <Overview />,
+            },
+        ],
     },
     {
         path: "/pharma",
