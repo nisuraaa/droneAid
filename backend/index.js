@@ -19,3 +19,7 @@ app.listen(PORT, (error) =>{
 app.get('/', (req, res) => {
     res.send('Hello World!');}
 );
+
+app.get('/testing123', (req, res) => {
+    res.send('Hello World!');}
+);
