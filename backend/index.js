@@ -1,9 +1,12 @@
+import express from 'express';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger-output.json' with { type: "json" };
 
-const express = require('express'); 
-const morgan = require('morgan');
 const app = express(); 
 const PORT = 3000; 
 app.use(morgan('tiny'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT, (error) =>{ 
     if(!error) 
