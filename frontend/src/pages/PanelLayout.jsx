@@ -8,7 +8,7 @@ import {
     Tbody,
     Tabs, TabList, TabPanels, Tab, TabPanel,
     Select,
-    Tfoot,
+    Tfoot, Switch,
     FormLabel,
     Tr,
     Tag,
@@ -26,7 +26,7 @@ const PanelLayout = () => {
     const dronelist = [
         {
             id: 1,
-            uid: 'drone1',
+            uid: 'LIGHTWEIGHT-DRONE-1',
             status: 'Idle'
         },
         {
@@ -130,9 +130,29 @@ const PanelLayout = () => {
             status: 'online'
         }
     ];
+
+    const tabs = [
+        {
+            id: 1,
+            name: 'Information'
+        },
+        {
+            id: 2,
+            name: 'Battery'
+        },
+        {
+            id: 3,
+            name: 'History'
+        },
+        {
+            id: 4,
+            name: 'Settings'
+        }
+    ]
     const [userInfo, setUserInfo] = useState(null);
     const { state, getBasicUserInfo, signOut } = useAuthContext();
     const [selectedDrone, setSelectedDrone] = useState(null);
+    const [selectedTab, setSelectedTab] = useState('1');
 
 
     useEffect(() => {
@@ -148,14 +168,14 @@ const PanelLayout = () => {
             <Flex flex={1} width={'100%'} mt={'0px'} backgroundColor={'#F1F1F1'} alignItems={'center'} justifyContent={'space-between'} p={'0px 0px'}  >
                 <Card w={'100%'} height={'100%'} variant={'solid'} >
 
-                    <Grid height={'100%'} templateColumns="repeat(5, 1fr)" w={'100%'} gap={6}>
-                        <GridItem overflowY={'scroll'} maxHeight={'90vh'}
+                    <Grid height={'100%'} templateColumns="repeat(6, 1fr)" w={'100%'} gap={6}>
+                        <GridItem overflowY={'auto'} maxHeight={'90vh'}
                             variant={'unstyled'} display={'flex'} flexDirection={'column'} height={'100%'}
                             colSpan={2} p={'20px'}
                             borderRight={
                                 '1px solid #E5E7EB'
                             }>
-                            <Flex position={'sticky'} top={0} backgroundColor={'white'} flexDirection={'column'} >
+                            <Flex position={'sticky'} zIndex={99} top={0} backgroundColor={'white'} flexDirection={'column'} >
 
                                 <Flex justifyContent={'space-between'} mb={'20px'} alignItems={'center'}>
                                     <Heading >
@@ -177,41 +197,32 @@ const PanelLayout = () => {
 
                                 </Flex>
                             </Flex>
-                            <Box
+                            <Flex flexDirection={'column'} gap={'10px'} overflowY={'scroll'}
                                 // Use 'auto' to show scrollbar only when needed
 
                                 // backgroundColor={'#F3F4F6'}
                                 height={'100%'}
                                 flex={1}
+
                                 // maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
                                 p={'10px'}  // Add padding to the Box
                             >
-                                <Table variant="simple">
-                                    <Thead>
-                                        <Tr>
-                                            <Th>UID</Th>
-                                            <Th>Status</Th>
-                                        </Tr>
-                                    </Thead>
-                                    <Tbody>
-                                        {dronelist.map((drone) => (
-                                            <Tr key={drone.id} onClick={() => {
-                                                setSelectedDrone(drone);
-                                            }}>
-                                                <Td>{drone.uid}</Td>
-                                                <Td><Tag size={'sm'}>{drone.status}</Tag></Td>
-                                            </Tr>
-                                        ))}
-                                    </Tbody>
-                                </Table>
-                            </Box>
+                                {dronelist.map((drone) => (
+                                    <Card cursor={'pointer'} onClick={() => setSelectedDrone(drone)} key={drone.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.id === drone.id ? 'white' : '#F3F4F6'} border={selectedDrone?.id === drone.id ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
+                                        <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'10px'}>
+                                            <Text>{drone.uid}</Text>
+                                            <Tag colorScheme="green">{drone.status}</Tag>
+                                        </Flex>
+                                    </Card>
+                                ))}
+                            </Flex>
                         </GridItem>
 
-                        <GridItem flex={1} colSpan={3} height={'100%'} justifyContent={'center'} alignItems={'center'} p={'40px'}>
+                        <GridItem flex={1} colSpan={4} height={'100%'} justifyContent={'center'} alignItems={'center'} p={'20px'}>
                             {!selectedDrone ? (
                                 <Flex flexDir={
                                     'column'
-                                } justifyContent={'center'} alignItems={'center'} >
+                                } justifyContent={'center'} alignItems={'center'} height={'100%'} >
 
                                     <Image src={DroneImg} width={'50%'} opacity={0.1} />
                                     <Text>
@@ -219,39 +230,71 @@ const PanelLayout = () => {
                                     </Text>
                                 </Flex>
                             ) : (
-                                <Flex flexDirection={'column'}>
+                                <Flex flexDirection={'column'} height={'100%'} >
                                     <Flex flexDirection={'row'}>
-                                        <Image src={dji} height={'300px'} width={'300px'} />
+                                        <Image src={dji} height={'200px'} width={'300px'} objectFit={'cover'} />
                                         <Flex flexDirection={'column'}>
-                                            <Heading ml={'10px'}>{selectedDrone.uid}</Heading>
+                                            <Heading fontWeight={'300px'} ml={'10px'}>{selectedDrone.uid}</Heading>
                                         </Flex>
 
                                     </Flex>
-                                    <Flex backgroundColor={'#F0F0F1'} flexDirection={'row'} flex={1} p={'20px'} mt={'20px'} borderRadius={'10px'}>
-                                        <Flex width={'78px'} flexDirection={'column'} flex={1} gap={'20px'}>
-                                            f    {/* <Tabs>
-                                            <TabList>
-                                                <Tab>One</Tab>
-                                                <Tab>Two</Tab>
-                                                <Tab>Three</Tab>
-                                            </TabList>
+                                    <Flex border={' 1px solid #E5E7EB'} flexDirection={'row'} flex={1} p={'0.5rem'} mt={'20px'} borderRadius={'10px'} gap={'10px'} >
 
-                                            <TabPanels>
-                                                <TabPanel>
-                                                    <p>one!</p>
-                                                </TabPanel>
-                                                <TabPanel>
-                                                    <p>two!</p>
-                                                </TabPanel>
-                                                <TabPanel>
-                                                    <p>three!</p>
-                                                </TabPanel>
-                                            </TabPanels>
-                                        </Tabs> */}
-                                        </Flex>
-                                        <Flex width={'calc(100% - 78px);'} flexDirection={'column'} flex={1} gap={'20px'}>
-                                            <Heading fontSize={'18px'}>Status</Heading>
-                                            <Text>{selectedDrone.status}</Text>
+                                        <Flex flexDirection={'column'} gap={'20px'} backgroundColor={'white'} p={'1rem'} w={'100%'} >
+                                            <Flex flexDirection={'row'} gap={'10px'}>
+                                                <Flex flexDirection={'column'}>
+
+                                                    <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} p={'10px'} flex={1} gap={'10px'} p={'30px'}>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Information</Heading>
+                                                            <Text ml={'10px'}>#12312131234324</Text>
+                                                        </Flex>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
+                                                            <Text ml={'10px'}>500g</Text>
+                                                        </Flex>
+
+                                                    </Flex>
+
+                                                    <Flex gap={'10px'}>
+
+                                                        <Button colorScheme={'blue'} mt={'auto'}>View Logs</Button>
+                                                        <Button colorScheme={'red'} mt={'auto'}>Remove</Button>
+                                                    </Flex>
+                                                </Flex>
+                                                <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} p={'10px'} flex={1} gap={'10px'} p={'30px'}>
+                                                    <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
+
+                                                        <Flex flexDirection={'column'} width={'70%'} gap={'10px'}>
+                                                            <Text>
+                                                                Battery Level
+                                                            </Text>
+                                                            <Text>
+                                                                Battery Status
+                                                            </Text>
+                                                            <Text>
+                                                                Last Charged
+                                                            </Text>
+                                                        </Flex>
+                                                        <Flex flexDirection={'column'} gap={'10px'} width={'30%'}>
+                                                            <Text>
+                                                                50%
+                                                            </Text>
+                                                            <Text>
+                                                                Discharging
+                                                            </Text>
+                                                            <Text>
+                                                                2 Hours Ago
+                                                            </Text>
+                                                        </Flex>
+                                                    </Flex>
+                                                    <Button mt={'10px'} colorScheme={'whatsapp'}>Charge</Button>
+                                                    <Text fontSize={'12px'} color={'grey'}>
+                                                        Charge mode can only be enabled when drone is idle
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+
                                         </Flex>
                                     </Flex>
                                 </Flex>
