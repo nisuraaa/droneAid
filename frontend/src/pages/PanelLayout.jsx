@@ -6,6 +6,7 @@ import {
     Box,
     InputGroup,
     Tbody,
+    Tabs, TabList, TabPanels, Tab, TabPanel,
     Select,
     Tfoot,
     FormLabel,
@@ -20,6 +21,7 @@ import { useAuthContext } from "@asgardeo/auth-react";
 import Logo from '../assets/droneAid.png'
 import Topbar from '../components/Topbar';
 import DroneImg from '../assets/uav-quadcopter.svg'
+import dji from '../assets/dji.png'
 const PanelLayout = () => {
     const dronelist = [
         {
@@ -130,6 +132,7 @@ const PanelLayout = () => {
     ];
     const [userInfo, setUserInfo] = useState(null);
     const { state, getBasicUserInfo, signOut } = useAuthContext();
+    const [selectedDrone, setSelectedDrone] = useState(null);
 
 
     useEffect(() => {
@@ -162,14 +165,14 @@ const PanelLayout = () => {
                                 </Flex>
 
                                 <Flex gap={'5px'}>
-                                <Input width={'70%'} placeholder="Search" />
-                                <InputGroup width={'30%'}>
-                               
-                                <Select >
-                                    <option value="option1">Status</option>
-                                    <option value="option2">UID</option>
-                                </Select>
-                                </InputGroup>
+                                    <Input width={'70%'} placeholder="Search" />
+                                    <InputGroup width={'30%'}>
+
+                                        <Select >
+                                            <option value="option1">Status</option>
+                                            <option value="option2">UID</option>
+                                        </Select>
+                                    </InputGroup>
 
 
                                 </Flex>
@@ -192,7 +195,9 @@ const PanelLayout = () => {
                                     </Thead>
                                     <Tbody>
                                         {dronelist.map((drone) => (
-                                            <Tr key={drone.id}>
+                                            <Tr key={drone.id} onClick={() => {
+                                                setSelectedDrone(drone);
+                                            }}>
                                                 <Td>{drone.uid}</Td>
                                                 <Td><Tag size={'sm'}>{drone.status}</Tag></Td>
                                             </Tr>
@@ -202,14 +207,55 @@ const PanelLayout = () => {
                             </Box>
                         </GridItem>
 
-                        <GridItem flexDir={
-                            'column'
-                        } display={'flex'} flex={1} colSpan={3} height={'100%'} justifyContent={'center'} alignItems={'center'} p={'40px'}>
-                            <Image src={DroneImg} width={'50%'} opacity={0.1} />
-                            <Text>
-                                Select a drone from the list to view its details
-                            </Text>
+                        <GridItem flex={1} colSpan={3} height={'100%'} justifyContent={'center'} alignItems={'center'} p={'40px'}>
+                            {!selectedDrone ? (
+                                <Flex flexDir={
+                                    'column'
+                                } justifyContent={'center'} alignItems={'center'} >
 
+                                    <Image src={DroneImg} width={'50%'} opacity={0.1} />
+                                    <Text>
+                                        Select a drone from the list to view its details
+                                    </Text>
+                                </Flex>
+                            ) : (
+                                <Flex flexDirection={'column'}>
+                                    <Flex flexDirection={'row'}>
+                                        <Image src={dji} height={'300px'} width={'300px'} />
+                                        <Flex flexDirection={'column'}>
+                                            <Heading ml={'10px'}>{selectedDrone.uid}</Heading>
+                                        </Flex>
+
+                                    </Flex>
+                                    <Flex backgroundColor={'#F0F0F1'} flexDirection={'row'} flex={1} p={'20px'} mt={'20px'} borderRadius={'10px'}>
+                                        <Flex width={'78px'} flexDirection={'column'} flex={1} gap={'20px'}>
+                                            f    {/* <Tabs>
+                                            <TabList>
+                                                <Tab>One</Tab>
+                                                <Tab>Two</Tab>
+                                                <Tab>Three</Tab>
+                                            </TabList>
+
+                                            <TabPanels>
+                                                <TabPanel>
+                                                    <p>one!</p>
+                                                </TabPanel>
+                                                <TabPanel>
+                                                    <p>two!</p>
+                                                </TabPanel>
+                                                <TabPanel>
+                                                    <p>three!</p>
+                                                </TabPanel>
+                                            </TabPanels>
+                                        </Tabs> */}
+                                        </Flex>
+                                        <Flex width={'calc(100% - 78px);'} flexDirection={'column'} flex={1} gap={'20px'}>
+                                            <Heading fontSize={'18px'}>Status</Heading>
+                                            <Text>{selectedDrone.status}</Text>
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                            )}
                         </GridItem>
                     </Grid>
                 </Card>
