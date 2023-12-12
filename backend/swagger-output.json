@@ -11,12 +11,40 @@
     "http"
   ],
   "paths": {
-    "/": {
+    "/drone/alldrones": {
       "get": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/drone/drones/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/drone/models": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }

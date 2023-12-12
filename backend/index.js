@@ -1,12 +1,17 @@
 import express from 'express';
 import morgan from 'morgan';
+import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger-output.json' with { type: "json" };
+
+import droneRoutes from './routes/drone.js';
 
 const app = express(); 
 const PORT = 3000; 
 app.use(morgan('tiny'));
+app.use(bodyParser.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/drone', droneRoutes);
 
 app.listen(PORT, (error) =>{ 
     if(!error) 
@@ -16,10 +21,3 @@ app.listen(PORT, (error) =>{
     } 
 );
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');}
-);
-
-app.get('/testing123', (req, res) => {
-    res.send('Hello World!');}
-);
