@@ -24,124 +24,29 @@ import dji from '../../assets/dji.png'
 
 
 const Overview = () => {
+
+    const [drones, setDrones] = useState(null);
     const navigate = useNavigate();
     const { state, getBasicUserInfo, signOut } = useAuthContext();
     useEffect(() => {
         getBasicUserInfo().then((info) => {
             console.log(info);
         });
-    }, []);
+        getdrones();
 
+    }, []);
+    const getdrones = async () => {
+        const response = await fetch(window.config.choreoApiUrl + '/drone/alldrones')
+        .then( (response) => response.json())
+        .then((data) => {
+            console.log(data);
+            setDrones(data);
+        })
+    }
     const [selectedDrone, setSelectedDrone] = useState(null);
     const [selectedTab, setSelectedTab] = useState('1');
 
-    const dronelist = [
-        {
-            id: 1,
-            uid: 'LIGHTWEIGHT-DRONE-1',
-            status: 'Idle'
-        },
-        {
-            id: 2,
-            uid: 'drone2',
-            status: 'online'
-        },
-        {
-            id: 3,
-            uid: 'drone3',
-            status: 'online'
-        },
-        {
-            id: 4,
-            uid: 'drone4',
-            status: 'online'
-        },
-        {
-            id: 5,
-            uid: 'drone5',
-            status: 'online'
-        },
-        {
-            id: 6,
-            uid: 'drone6',
-            status: 'online'
-        },
-        {
-            id: 7,
-            uid: 'drone7',
-            status: 'online'
-        },
-        {
-            id: 8,
-            uid: 'drone8',
-            status: 'online'
-        },
-        {
-            id: 9,
-            uid: 'drone9',
-            status: 'online'
-        },
-        {
-            id: 10,
-            uid: 'drone10',
-            status: 'online'
-        },
-        {
-            id: 11,
-            uid: 'drone11',
-            status: 'online'
-        },
-        {
-            id: 12,
-            uid: 'drone12',
-            status: 'online'
-        },
-        {
-            id: 13,
-            uid: 'drone13',
-            status: 'online'
-        },
-        {
-            id: 14,
-            uid: 'drone14',
-            status: 'online'
-        },
-        {
-            id: 15,
-            uid: 'drone15',
-            status: 'online'
-        },
-        {
-            id: 16,
-            uid: 'drone16',
-            status: 'online'
-        },
-        {
-            id: 17,
-            uid: 'drone17',
-            status: 'online'
-        },
-        {
-            id: 18,
-            uid: 'drone18',
-            status: 'online'
-        },
-        {
-            id: 19,
-            uid: 'drone19',
-            status: 'online'
-        },
-        {
-            id: 20,
-            uid: 'drone20',
-            status: 'online'
-        },
-        {
-            id: 21,
-            uid: 'drone21',
-            status: 'online'
-        }
-    ];
+
 
     return (
         <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'C9C9C9'} >
@@ -185,15 +90,21 @@ const Overview = () => {
 
                     // maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
                     p={'10px'}  // Add padding to the Box
-                >
-                    {dronelist.map((drone) => (
+                >{
+                    drones!=null ? drones?.map((drone) => (
                         <Card cursor={'pointer'} onClick={() => setSelectedDrone(drone)} key={drone.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.id === drone.id ? 'white' : '#F3F4F6'} border={selectedDrone?.id === drone.id ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
                             <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'10px'}>
-                                <Text>{drone.uid}</Text>
+                                <Text>{drone.name}</Text>
                                 <Tag colorScheme="green">{drone.status}</Tag>
                             </Flex>
                         </Card>
-                    ))}
+                    )) : (
+                        <Box>
+                            Loading
+                        </Box>
+                    )
+                }
+                    {}
                 </Flex>
             </Flex>
 

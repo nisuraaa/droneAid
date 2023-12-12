@@ -33,8 +33,11 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -43,8 +46,18 @@
       "get": {
         "description": "",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/drone/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

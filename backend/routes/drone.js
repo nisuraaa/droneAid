@@ -64,8 +64,7 @@ router.get('/alldrones', (req, res) => {
             status: 'active'
         }
     ];
-
-    res.json(drones);
+    res.status(200).json(drones);
 });
 
 router.get('/drones/:id', (req, res) => {
