@@ -39,9 +39,13 @@ const Overview = () => {
     const {getAccessToken} = useAuthContext();
     const getdrones = async () => {
         const accessToken = await getAccessToken();
+        console.log(accessToken);
         const response = await fetch(window.config.choreoApiUrl + '/drone/alldrones', {
              method: 'GET',
-             headers: 'Bearer ' + accessToken,
+             headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+                }
         })
         .then( (response) => response.json())
         .then((data) => {
