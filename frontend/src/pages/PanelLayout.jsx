@@ -1,0 +1,65 @@
+import React, { useEffect, useState } from 'react'
+import { Outlet } from 'react-router-dom'
+import {
+    Flex, Image, Text, VStack, Card, Grid, GridItem, Heading, Input, Button, Table,
+    Thead,
+    Box,
+    InputGroup,
+    Tbody,
+    Tabs, TabList, TabPanels, Tab, TabPanel,
+    Select,
+    Tfoot, Switch,
+    FormLabel,
+    Tr,
+    Tag,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+} from '@chakra-ui/react'
+import { useAuthContext } from "@asgardeo/auth-react";
+import Logo from '../assets/droneAid.png'
+import Topbar from '../components/Topbar';
+const PanelLayout = () => {
+
+
+    const tabs = [
+        {
+            id: 1,
+            name: 'Information'
+        },
+        {
+            id: 2,
+            name: 'Battery'
+        },
+        {
+            id: 3,
+            name: 'History'
+        },
+        {
+            id: 4,
+            name: 'Settings'
+        }
+    ]
+    const [userInfo, setUserInfo] = useState(null);
+    const { state, getBasicUserInfo, signOut } = useAuthContext();
+   
+    useEffect(() => {
+        getBasicUserInfo().then((info) => {
+            setUserInfo(info);
+        });
+    }, []);
+
+    return (
+
+        <Flex height={'100vh'} width={'100vw'} backgroundColor={'#C9C9C9'} justifyContent={'flex-start'} flexDirection={'column'} alignItems={'center'} >
+            <Topbar />
+            <Flex flex={1} width={'100%'}  alignItems={'center'} justifyContent={'center'} p={'0px 0px'}  >
+                <Outlet />
+            </Flex >
+        </Flex >
+
+    )
+}
+
+export default PanelLayout
