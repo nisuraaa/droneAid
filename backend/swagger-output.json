@@ -1,21 +1,14 @@
 {
-  "openapi": "3.0.0",
+  "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "My API",
+    "description": "Description",
+    "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "",
-      "description": ""
-    }
-  ],
-  "tags": [
-    {
-      "name": "",
-      "description": ""
-    }
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
   ],
   "paths": {
     "/drone/alldrones": {
@@ -36,9 +29,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
@@ -54,9 +45,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "type": "string"
           }
         ],
         "responses": {
@@ -79,29 +68,29 @@
     "/drone/register": {
       "post": {
         "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "model": {
-                    "example": "any"
-                  },
-                  "serial": {
-                    "example": "any"
-                  },
-                  "name": {
-                    "example": "any"
-                  }
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "model": {
+                  "example": "any"
+                },
+                "serial": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
