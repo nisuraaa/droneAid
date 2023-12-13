@@ -35,6 +35,11 @@ const DroneSchema = new Schema({
         max: 100,
         default: 100
     },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+        required : true
+    },
 });
 
 const Drones = mongoose.model("drones", DroneSchema);

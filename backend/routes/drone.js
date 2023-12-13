@@ -11,15 +11,15 @@ const generateRandomSerial = () => {
 
 router.get('/alldrones', async (req, res) => {
 
-    const drones  = await Drones.find();
-   
+    const drones = await Drones.find({ isDeleted: false }).populate('_model');
+
     console.log(drones);
     res.status(200).json(drones);
 });
 
 router.get('/drones/:id', async (req, res) => {
-    
-    const drone = await Drones.find({uuid: req.params.id}).populate('_model');
+
+    const drone = await Drones.find({ uuid: req.params.id }).populate('_model');
     console.log(drone);
     res.json(drone[0]);
 });
@@ -46,14 +46,15 @@ router.post('/register', async (req, res) => {
         _model: modelFound._id
     });
 
-    const drone  = await newDrone.save();
+    const drone = await newDrone.save();
     // console.log(drone);
 
     res.send('Drone registered');
 });
 
-router.delete('/drones/:id', async (req, res) => {
-    const drone = await Drones.deleteOne({ uuid: req.params.id });
+router.patch('/drones/:id', async (req, res) => {
+
+    const drone = await Drones.findOneAndUpdate({ uuid: req.params.id }, { isDeleted: true }, { new: true });
 
     console.log(drone);
     // if (!drone) res.status(404).send('Drone not found');

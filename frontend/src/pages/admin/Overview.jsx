@@ -44,7 +44,7 @@ import dji from '../../assets/dji.png'
 
 const Overview = () => {
     const { getAccessToken } = useAuthContext();
-
+    const [droneDataLoading,setDroneDataLoading] = useState(null);
     const [drones, setDrones] = useState(null);
     const [droneData, setDroneData] = useState(null);
     const navigate = useNavigate();
@@ -58,6 +58,7 @@ const Overview = () => {
     }, []);
     const getDroneDetails = async (uuid) => {
         console.log(uuid);
+
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'GET',
             headers: {
@@ -253,7 +254,7 @@ const Overview = () => {
                                             <Flex gap={'10px'}>
 
                                                 <Button colorScheme={'blue'} mt={'auto'}>View Logs</Button>
-                                                <DeleteDialog getdrones={getdrones} uuid={droneData?.uuid} />
+                                                <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
                                             </Flex>
                                         </Flex>
                                         <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
@@ -410,14 +411,14 @@ function DroneRegister({ getDrones }) {
     )
 }
 
-function DeleteDialog({ uuid, getdrones }) {
+function DeleteDialog({ uuid, getdrones,setDroneData,setSelectedDrone }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     const toast = useToast()
 
     const deleteFn = async () => {
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
-            method: 'DELETE',
+            method: 'PATCH',
             headers: {
                 // 'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
@@ -435,6 +436,8 @@ function DeleteDialog({ uuid, getdrones }) {
                     });
                     onClose();
                     getdrones();
+                    setSelectedDrone(null);
+                    setDroneData(null);
                 }
             })
     }
