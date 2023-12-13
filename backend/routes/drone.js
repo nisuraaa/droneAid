@@ -1,147 +1,30 @@
 import express from 'express';
 const router = express.Router();
 
-router.get('/alldrones', (req, res) => {
-    const drones = [
-        {
-            id: 1,
-            name: 'drone1',
-            model: 'model1',
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'drone2',
-            model: 'model2',
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'drone3',
-            model: 'model3',
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'drone4',
-            model: 'model4',
-            status: 'active'
-        },
-        {
-            id: 5,
-            name: 'drone5',
-            model: 'model5',
-            status: 'active'
-        },
-        {
-            id: 6,
-            name: 'drone6',
-            model: 'model6',
-            status: 'active'
-        },
-        {
-            id: 7,
-            name: 'drone7',
-            model: 'model7',
-            status: 'active'
-        },
-        {
-            id: 8,
-            name: 'drone8',
-            model: 'model8',
-            status: 'active'
-        },
-        {
-            id: 9,
-            name: 'drone9',
-            model: 'model9',
-            status: 'active'
-        },
-        {
-            id: 10,
-            name: 'drone10',
-            model: 'model10',
-            status: 'active'
-        }
-    ];
+import Drones from '../models/droneModel.js';
+import DroneModels from '../models/TypeModel.js';
+
+const generateRandomSerial = () => {
+    const serial = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+    return serial;
+}
+
+router.get('/alldrones', async (req, res) => {
+
+    const drones  = await Drones.find();
+   
+    console.log(drones);
     res.status(200).json(drones);
 });
 
-router.get('/drones/:id', (req, res) => {
-    const drones = [
-        {
-            id: 1,
-            name: 'drone1',
-            model: 'model1',
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'drone2',
-            model: 'model2',
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'drone3',
-            model: 'model3',
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'drone4',
-            model: 'model4',
-            status: 'active'
-        },
-        {
-            id: 5,
-            name: 'drone5',
-            model: 'model5',
-            status: 'active'
-        },
-        {
-            id: 6,
-            name: 'drone6',
-            model: 'model6',
-            status: 'active'
-        },
-        {
-            id: 7,
-            name: 'drone7',
-            model: 'model7',
-            status: 'active'
-        },
-        {
-            id: 8,
-            name: 'drone8',
-            model: 'model8',
-            status: 'active'
-        },
-        {
-            id: 9,
-            name: 'drone9',
-            model: 'model9',
-            status: 'active'
-        },
-        {
-            id: 10,
-            name: 'drone10',
-            model: 'model10',
-            status: 'active'
-        }
-    ];
-    console.log(req.params.id);
-
-    const drone = drones.find((d) => d.id === parseInt(req.params.id));
-
-    if (!drone) res.status(404).send('Drone not found');
+router.get('/drones/:id', async (req, res) => {
+    
+    const drone = await Drones.find({uuid: req.params.id}).populate('_model');
     console.log(drone);
-
-
-    res.json(drone);
+    res.json(drone[0]);
 });
 
-router.get('/models', (req, res) => { 
+router.get('/models', (req, res) => {
     const models = [{
         id: 1,
         name: 'model1',
@@ -193,13 +76,40 @@ router.get('/models', (req, res) => {
         description: 'description10'
 
     }]
-    
-    res.json(models);
-});   
 
-router.post('/register', (req, res) => { 
+    res.json(models);
+});
+
+router.post('/register', async (req, res) => {
     console.log(req.body);
+
+    const model = req.body.model;
+
+    const modelFound = await DroneModels.findOne({ modelID: model });
+    console.log(modelFound);
+    console.log(modelFound._id);
+
+    var newDrone = new Drones({
+        uuid: generateRandomSerial(),
+        serial: req.body.serial,
+        name: req.body.name,
+        _model: modelFound._id
+    });
+
+    const drone  = await newDrone.save();
+    console.log(drone);
+
     res.send('Drone registered');
 });
+
+router.delete('/drones/:id', async (req, res) => {
+    const drone = await Drones.deleteOne({ uuid: req.params.id });
+
+    console.log(drone);
+    // if (!drone) res.status(404).send('Drone not found');
+    res.send('Drone deleted');
+});
+
+
 
 export default router;
