@@ -10,6 +10,14 @@ import {
     ModalContent,
     ModalHeader,
     ModalFooter,
+    useToast,
+    AlertDialog,
+    AlertDialogBody,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogContent,
+    AlertDialogOverlay,
+    AlertDialogCloseButton,
     ModalBody,
     ModalCloseButton,
     useDisclosure,
@@ -106,7 +114,7 @@ const Overview = () => {
                         <Heading >
                             <Text fontSize={'18px'}>Drones</Text>
                         </Heading>
-                        <DroneRegister />
+                        <DroneRegister getDrones={getdrones} />
                     </Flex>
 
                     <Flex gap={'5px'}>
@@ -138,8 +146,8 @@ const Overview = () => {
                             <Card cursor={'pointer'} onClick={() => {
                                 setSelectedDrone(drone)
                                 getDroneDetails(drone?.uuid);
-                            }} key={drone?.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.id === drone?.id ? 'white' : '#F3F4F6'} border={selectedDrone?.id === drone?.id ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
-                                <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'10px'}>
+                            }} key={drone?.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.uuid === drone?.uuid ? 'white' : '#F3F4F6'} border={selectedDrone?.uuid === drone?.uuid ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
+                                <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'5px'}>
                                     <Text>{drone?.name}</Text>
                                     <Tag colorScheme="grey">{drone?.status.toUpperCase()}</Tag>
                                 </Flex>
@@ -245,7 +253,7 @@ const Overview = () => {
                                             <Flex gap={'10px'}>
 
                                                 <Button colorScheme={'blue'} mt={'auto'}>View Logs</Button>
-                                                <Button colorScheme={'red'} mt={'auto'}>Remove</Button>
+                                                <DeleteDialog getdrones={getdrones} uuid={droneData?.uuid} />
                                             </Flex>
                                         </Flex>
                                         <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
@@ -293,7 +301,12 @@ const Overview = () => {
 }
 
 
-function DroneRegister() {
+function DroneRegister({ getDrones }) {
+
+    const toast = useToast()
+    const [serial, setSerial] = useState(null);
+    const [model, setModel] = useState(null);
+    const [name, setName] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [modelData, setModelData] = useState(null);
     useEffect(() => {
@@ -302,6 +315,8 @@ function DroneRegister() {
         }
     }, [isOpen]);
     const getModelDetails = async () => {
+        // const [accessToken] = await getAccessToken();
+
         const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
             method: 'GET',
             headers: {
@@ -314,6 +329,41 @@ function DroneRegister() {
                 console.log(data);
                 setModelData(data);
             })
+    }
+    const onSubmit = async () => {
+        const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
+            method: 'POST',
+            headers: {
+                // 'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+
+                {
+                    "serial": serial,
+                    "model": model,
+                    "name": name
+                }
+            )
+        })
+            .then((response) => {
+                // console.log(response.status)
+                if (response.status == 200) {
+
+                    onClose();
+                    toast({
+                        title: 'Drone Registered Successfully .',
+                        // description: "We've created your account for you.",
+                        position: 'bottom-right',
+                        status: 'success',
+                        duration: 5000,
+                        // isClosable: true,
+                    });
+                    getDrones();
+                }
+            })
+
+
     }
 
     return (
@@ -328,32 +378,108 @@ function DroneRegister() {
                     <ModalBody>
                         <form>
                             <Flex flexDirection={'column'} gap={'10px'}>
-                            <InputGroup flexDirection={'column'}>
-                                <FormLabel>Drone Model</FormLabel>
-                                <Select placeholder="Select Drone Model">
-                                    <option value="option1">Mavic Mini</option>
-                                    <option value="option2">Mavic Air</option>
-                                    <option value="option3">Mavic Pro</option>
-                                </Select>
-                            </InputGroup>
-                            <InputGroup flexDirection={'column'}>
-                                <FormLabel>Drone Name</FormLabel>
-                                <Input placeholder="eg: MAVIC" />
-                            </InputGroup>
-                            <InputGroup flexDirection={'column'}>
-                                <FormLabel>Serial Number</FormLabel>
-                                <Input placeholder="eg: SN_12345678" />
-                            </InputGroup>
+                                <InputGroup flexDirection={'column'}>
+                                    <FormLabel>Drone Model</FormLabel>
+                                    <Select placeholder="Select Drone Model" onChange={(e) => setModel(e.target.value)}>
+                                        {
+                                            modelData?.map((model) => (
+                                                <option key={model.modelID} value={model.modelID}>{model.name}</option>
+                                            ))
+                                        }
+                                    </Select>
+                                </InputGroup>
+                                <InputGroup flexDirection={'column'}>
+                                    <FormLabel>Drone Name</FormLabel>
+                                    <Input placeholder="eg: MAVIC" onChange={(e) => setName(e.target.value)} />
+                                </InputGroup>
+                                <InputGroup flexDirection={'column'}>
+                                    <FormLabel>Serial Number</FormLabel>
+                                    <Input placeholder="eg: SN_12345678" onChange={(e) => setSerial(e.target.value)} />
+                                </InputGroup>
                             </Flex>
                         </form>
                     </ModalBody>
-                    <ModalFooter>
-                        <Button onClick={onClose}>Close</Button>
+                    <ModalFooter >
+                        <Button onClick={onClose} mr={'5px'} >Close</Button>
+                        <Button onClick={onSubmit} variant='solid' colorScheme='messenger'>Add</Button>
+
                     </ModalFooter>
                 </ModalContent>
             </Modal>
         </>
     )
 }
+
+function DeleteDialog({ uuid, getdrones }) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const cancelRef = React.useRef()
+    const toast = useToast()
+
+    const deleteFn = async () => {
+        const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
+            method: 'DELETE',
+            headers: {
+                // 'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response) => {
+                if (response.status == 200) {
+                    toast({
+                        title: 'Drone Deleted',
+                        // description: "We've created your account for you.",
+                        position: 'bottom-right',
+                        status: 'error',
+                        duration: 5000,
+                        // isClosable: true,
+                    });
+                    onClose();
+                    getdrones();
+                }
+            })
+    }
+
+    return (
+        <>
+            <Button colorScheme='red' onClick={onOpen}>
+                Remove
+            </Button>
+
+            <AlertDialog
+                motionPreset='slideInBottom'
+                isOpen={isOpen}
+                leastDestructiveRef={cancelRef}
+                onClose={onClose}
+                isCentered
+            >
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                            Delete Drone
+                        </AlertDialogHeader>
+
+                        <AlertDialogBody>
+                            Are you sure? You can't undo this action afterwards.
+                        </AlertDialogBody>
+
+                        <AlertDialogFooter>
+                            <Button ref={cancelRef} onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button onClick={
+                                () => {
+                                    deleteFn();
+                                }
+                            } colorScheme='red' ml={3}>
+                                Delete
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
+        </>
+    )
+}
+
 
 export default Overview

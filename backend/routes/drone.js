@@ -24,68 +24,18 @@ router.get('/drones/:id', async (req, res) => {
     res.json(drone[0]);
 });
 
-router.get('/models', (req, res) => {
-    const models = [{
-        id: 1,
-        name: 'model1',
-        description: 'description1'
-    },
-    {
-        id: 2,
-        name: 'model2',
-        description: 'description2'
-    },
-    {
-        id: 3,
-        name: 'model3',
-        description: 'description3'
-    },
-    {
-        id: 4,
-        name: 'model4',
-        description: 'description4'
-    },
-    {
-        id: 5,
-        name: 'model5',
-        description: 'description5'
-    },
-    {
-        id: 6,
-        name: 'model6',
-        description: 'description6'
-    },
-    {
-        id: 7,
-        name: 'model7',
-        description: 'description7'
-    },
-    {
-        id: 8,
-        name: 'model8',
-        description: 'description8'
-    },
-    {
-        id: 9,
-        name: 'model9',
-        description: 'description9'
-    },
-    {
-        id: 10,
-        name: 'model10',
-        description: 'description10'
-
-    }]
-
+router.get('/models', async (req, res) => {
+    const models = await DroneModels.find();
+    console.log(models);
     res.json(models);
 });
 
 router.post('/register', async (req, res) => {
     console.log(req.body);
 
-    const model = req.body.model;
+    // const model = req.body.model;
 
-    const modelFound = await DroneModels.findOne({ modelID: model });
+    const modelFound = await DroneModels.findOne({ modelID: req.body.model });
     console.log(modelFound);
     console.log(modelFound._id);
 
@@ -97,7 +47,7 @@ router.post('/register', async (req, res) => {
     });
 
     const drone  = await newDrone.save();
-    console.log(drone);
+    // console.log(drone);
 
     res.send('Drone registered');
 });
