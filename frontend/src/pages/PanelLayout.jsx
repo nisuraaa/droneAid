@@ -20,7 +20,7 @@ import {
 import { useAuthContext } from "@asgardeo/auth-react";
 import Logo from '../assets/droneAid.png'
 import Topbar from '../components/Topbar';
-const PanelLayout = () => {
+const PanelLayout = ({routes}) => {
 
 
     const tabs = [
@@ -53,7 +53,7 @@ const PanelLayout = () => {
     return (
 
         <Flex height={'100vh'} width={'100vw'} backgroundColor={'#C9C9C9'} justifyContent={'flex-start'} flexDirection={'column'} alignItems={'center'} >
-            <Topbar />
+            <Topbar routes={routes} />
             <Flex flex={1} width={'100%'}  alignItems={'center'} justifyContent={'center'} p={'0px 0px'}  >
                 <Outlet />
             </Flex >

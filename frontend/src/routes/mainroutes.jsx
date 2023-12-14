@@ -6,8 +6,32 @@ import { PrivateRoute } from "../components/auth/PrivateRoute.jsx";
 import Landing from '../pages/Landing.jsx'
 import Login from '../pages/Login.jsx'
 import Overview from '../pages/admin/Overview.jsx'
+import PharmaOverview from '../pages/pharma/Overview.jsx'
 
 import PanelLayout from "../pages/PanelLayout.jsx";
+
+
+const adminRoutes = [
+    {
+        path: "/admin/overview",
+        label: "Overview"
+    },
+    {
+        path: "/admin/fleet",
+        label: "My Fleet"
+    }
+]
+const pharmaRoutes = [
+    {
+        path: "/pharma/overview",
+        label: "Overview"
+    },
+    {
+        path: "/pharma/create",
+        label: "Create Orders"
+    }
+]
+
 
 const router = createBrowserRouter([
     {
@@ -22,7 +46,7 @@ const router = createBrowserRouter([
     {
         path: "/admin",
         element: <PrivateRoute allowedRoles={["administrator"]}>
-           <PanelLayout />
+            <PanelLayout routes={adminRoutes} />
         </PrivateRoute>,
         children: [
             {
@@ -38,9 +62,20 @@ const router = createBrowserRouter([
     {
         path: "/pharma",
         element: <PrivateRoute allowedRoles={["pharma"]}>
-           <PanelLayout />
+            <PanelLayout routes={pharmaRoutes} />
         </PrivateRoute>,
+        children: [
+            {
+                path: "create",
+                element: <PharmaOverview />,
+            },
+            {
+                path: "overview",
+                // element: <Overview />,
+            },
+        ],
     },
+    
 ]);
 
 export default router;

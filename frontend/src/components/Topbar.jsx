@@ -29,7 +29,7 @@ import {
 } from '@chakra-ui/icons'
 import Logo from '../assets/droneAid-white.svg'
 
-const Topbar = () => {
+const Topbar = ({ routes }) => {
 
     const [user, setUser] = useState(null);
 
@@ -50,17 +50,35 @@ const Topbar = () => {
     return (
         <Flex zIndex={100}
             color={'white'} height={'58px'} width={'100%'} justifyContent={'center'} alignItems={'center'}  >
-            <Flex width={'99%'} height={'100%'} background={'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)'} borderBottomLeftRadius={'10px'} borderBottomRightRadius={'10px'}
+            <Flex width={'99%'} height={'100%'} background={
+                user?.applicationRoles == "administrator" ? 'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)' : 'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(255, 107, 193,1) 150%)'
+            } borderBottomLeftRadius={'10px'} borderBottomRightRadius={'10px'}
                 justifyContent={'space-between'} p={'0px 10px'} pl={'30px'} alignItems={'center'} >
+
+                {/* {JSON.stringify(routes)} */}
+
                 <Flex gap={'40px'} justifyContent={'center'} alignItems={'center'}>
                     <Image src={Logo} height={'80%'} width={'180'} />
                     <HStack spacing={8} alignItems={'center'}>
-                        <NavLink to="/admin/overview" className={({ isActive, isPending }) =>
+                        {routes?.map((route, index) => {
+                            return (
+                                <NavLink key={index} to={route.path} className={({ isActive, isPending }) =>
+                                    isPending ? "pending" : isActive ? "active" : ""
+                                }>{route.label}</NavLink>
+                            )
+                        })}
+                    
+                    
+
+
+                        {/* <NavLink to="/admin/overview" className={({ isActive, isPending }) =>
                             isPending ? "pending" : isActive ? "active" : ""
                         }>Overview</NavLink>
                         <NavLink to="/admin/fleet" className={({ isActive, isPending }) =>
                             isPending ? "pending" : isActive ? "active" : ""
-                        }>My Fleet</NavLink>
+                        }>My Fleet</NavLink> */}
+
+
                     </HStack>
                 </Flex>
                 <Menu >
