@@ -6,7 +6,7 @@ import swaggerDocument from './swagger-output.json' with { type: "json" };
 import cors from 'cors'
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-
+import mediRoutes from './routes/medicine.js'
 import droneRoutes from './routes/drone.js';
 
 dotenv.config();
@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/drone', droneRoutes);
+app.use('/medi', mediRoutes);
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connected")).catch((error) => console.log(error));
 
