@@ -38,7 +38,7 @@
           }
         }
       },
-      "delete": {
+      "patch": {
         "description": "",
         "parameters": [
           {
@@ -88,6 +88,16 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/medi/all": {
+      "get": {
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
