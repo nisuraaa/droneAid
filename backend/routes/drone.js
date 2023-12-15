@@ -21,10 +21,20 @@ router.get('/recommend', async (req, res) => {
 
     const weight = req.body.weight;
     console.log(req.body);
-    const drones = await Drones.find({ isDeleted: false }).populate({ model: 'dronemodels', path: '_model', match: { maxWeight: { $gte: weight } } });
-    console.log(drones);
-    res.status(200).json(drones);
+    const drones = await Drones.find({ isDeleted: false })
+        .populate({
+            model: 'dronemodels',
+            path: '_model',
+            match: { maxWeight: { $gte: weight } }
+        });
+
+    // Filter out the drones whose _model field is null
+    const filteredDrones = drones.filter(drone => drone._model !== null);
+
+    res.status(200).json(filteredDrones);
 });
+
+
 router.get('/drones/:id', async (req, res) => {
 
     const drone = await Drones.find({ uuid: req.params.id }).populate('_model');
