@@ -58,11 +58,12 @@ const Overview = () => {
     }, []);
     const getDroneDetails = async (uuid) => {
         console.log(uuid);
+        const accessToken = await getAccessToken();
 
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'GET',
             headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
+                'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
             }
         })
