@@ -44,9 +44,9 @@ import dji from '../../assets/dji.png'
 
 const Overview = () => {
     const { getAccessToken } = useAuthContext();
-    const [droneDataLoading, setDroneDataLoading] = useState(null);
-    const [drones, setDrones] = useState(null);
-    const [droneData, setDroneData] = useState(null);
+    // const [droneDataLoading, setDroneDataLoading] = useState(null);
+    const [drones, setDrones] = useState([]);
+    const [droneData, setDroneData] = useState([]);
     const navigate = useNavigate();
     const { state, getBasicUserInfo, signOut } = useAuthContext();
     useEffect(() => {
@@ -309,7 +309,7 @@ function DroneRegister({ getDrones }) {
     const [model, setModel] = useState(null);
     const [name, setName] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [modelData, setModelData] = useState(null);
+    const [modelData, setModelData] = useState([]);
     useEffect(() => {
         if (isOpen) {
             getModelDetails();

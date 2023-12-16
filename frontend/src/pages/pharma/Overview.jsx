@@ -205,7 +205,7 @@ const Overview = () => {
 
                             <StepSeparator />
                         </Step>
-                    ))}
+                    ))}     
                 </Stepper>
 
             </Flex>
