@@ -239,13 +239,13 @@ const Overview = () => {
                                                 <Flex flexDirection={'column'} gap={'0px'}>
                                                     <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
                                                     <Text ml={'10px'}>
-                                                        {droneData?._model.name}
+                                                        {droneData?._model?.name}
                                                     </Text>
                                                 </Flex>
                                                 <Flex flexDirection={'column'} gap={'0px'}>
                                                     <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
                                                     <Text ml={'10px'}>
-                                                        {droneData?._model.maxWeight} g
+                                                        {droneData?._model?.maxWeight} g
                                                     </Text>
                                                 </Flex>
 
@@ -386,7 +386,7 @@ function DroneRegister({ getDrones }) {
                                     <Select placeholder="Select Drone Model" onChange={(e) => setModel(e.target.value)}>
                                         {
                                             modelData?.map((model) => (
-                                                <option key={model.modelID} value={model.modelID}>{model.name}</option>
+                                                <option key={model?.modelID} value={model?.modelID}>{model?.name}</option>
                                             ))
                                         }
                                     </Select>
