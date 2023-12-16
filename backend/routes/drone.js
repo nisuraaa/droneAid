@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { query } from 'express';
 const router = express.Router();
 
 import Drones from '../models/droneModel.js';
@@ -8,6 +8,62 @@ const generateRandomSerial = () => {
     const serial = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
     return serial;
 }
+
+export const changeStatus = async (droneUUID, status) => {
+
+    const drone = await Drones.findOne({ uuid: droneUUID });
+    console.log(drone);
+    if (drone) {
+        if (status === 'idle') {
+            drone.status = 'idle';
+        } else if (status === 'loading') {
+            if (drone.status === 'idle' || drone.status === 'loaded') {
+                drone.status = 'loading';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'delivering') {
+            if (drone.status === 'loaded' || drone.status === 'loading') {
+                drone.status = 'delivering';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'delivered') {
+            if (drone.status === 'delivering') {
+                drone.status = 'delivered';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+
+        } else if (status === 'returning') {
+            if (drone.status === 'delivered') {
+                drone.status = 'returning';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+
+        } else if (status === 'charging') {
+            if (drone.status === 'idle') {
+                drone.status = 'charging';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else {
+            return { message: 'Invalid status', status: 'error' };
+        }
+        await drone.save();
+        return { message: 'Status changed successfully', status: 'success' };
+    } else {
+        return { message: 'Drone not found', status: 'error' };
+    }
+}
+
+router.put('/changestatus', async (req, res) => {
+    const { droneUUID, status } = req.body;
+    const resp = await changeStatus(droneUUID, status);
+    console.log(resp);
+    res.status(200).json(resp);
+});
 
 router.get('/alldrones', async (req, res) => {
 
@@ -19,9 +75,10 @@ router.get('/alldrones', async (req, res) => {
 
 router.get('/recommend', async (req, res) => {
 
-    const weight = req.body.weight;
-    console.log(req.body);
-    const drones = await Drones.find({ isDeleted: false })
+    const weight = req.query.weight;
+    console.log(req.query);
+
+    const drones = await Drones.find({ isDeleted: false, status: 'idle' })
         .populate({
             model: 'dronemodels',
             path: '_model',
@@ -32,7 +89,10 @@ router.get('/recommend', async (req, res) => {
     const filteredDrones = drones.filter(drone => drone._model !== null);
 
     res.status(200).json(filteredDrones);
+    // res.status(200).json(drones);
 });
+
+
 
 
 router.get('/drones/:id', async (req, res) => {
@@ -83,4 +143,4 @@ router.patch('/drones/:id', async (req, res) => {
 });
 
 
-export default router;
+export default router
