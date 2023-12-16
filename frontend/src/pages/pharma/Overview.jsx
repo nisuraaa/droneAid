@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuthContext } from "@asgardeo/auth-react";
 import { useNavigate } from "react-router-dom";
+import { DeleteIcon, AddIcon, SmallAddIcon } from '@chakra-ui/icons'
 import {
     Flex, Image, Text, VStack, Card, Grid, GridItem, Heading, Input, Button, Table,
     Thead,
@@ -17,6 +18,7 @@ import {
     AlertDialogHeader,
     AlertDialogContent,
     CardHeader,
+    CardBody, CardFooter,
     AlertDialogOverlay,
     AlertDialogCloseButton,
     ModalBody,
@@ -35,6 +37,7 @@ import {
     InputGroup,
     Skeleton, SkeletonCircle, SkeletonText,
     Tbody,
+    IconButton,
     Tabs, TabList, TabPanels, Tab, TabPanel,
     Select,
     Tfoot, Switch,
@@ -47,6 +50,7 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 
+import flyingDrone from '../../assets/pin.png'
 import DroneImg from '../../assets/uav-quadcopter.svg'
 import dji from '../../assets/dji.png'
 
@@ -64,16 +68,7 @@ const Overview = () => {
     })
     const { getAccessToken } = useAuthContext();
     const [pageNo, setPageNo] = useState(1);
-    const next = () => {
-        if (pageNo < 3)
-            setActiveStep(activeStep + 1);
-        setPageNo(pageNo + 1);
-    }
-    const prev = () => {
-        if (pageNo > 1)
-            setActiveStep(activeStep - 1);
-        setPageNo(pageNo - 1);
-    }
+
     const navigate = useNavigate();
     const { state, getBasicUserInfo, signOut } = useAuthContext();
     const [totalWeight, setTotalWeight] = useState(0);
@@ -94,40 +89,99 @@ const Overview = () => {
     ]);
 
     const meds = [
-        { name: 'Med 1', weight: 10, code: "A0001" },
-        { name: 'Med 2', weight: 20, code: "A0002" },
-        { name: 'Med 3', weight: 30, code: "A0003" },
-        { name: 'Med 3', weight: 30, code: "A0003" },
-        { name: 'Med 3', weight: 30, code: "A0003" },
-        { name: 'Med 3', weight: 30, code: "A0003" },
-        { name: 'Med 4', weight: 40, code: "A0004" },
-        { name: 'Med 5', weight: 50, code: "A0005" },
+        { name: 'Med 1', weight: 10, medID: "A0001" },
+        { name: 'Med 2', weight: 20, medID: "A0002" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 3', weight: 30, medID: "A0003" },
+        { name: 'Med 4', weight: 40, medID: "A0004" },
+        { name: 'Med 5', weight: 50, medID: "A0005" },
     ]
 
-    const availableDrones = [
-        { name: 'Drone', model: 'Curiser', 'UUID': '1', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '2', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '3', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '4', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '5', 'status': 'Available' },
-        { name: 'Drone', model: 'Curiser', 'UUID': '6', 'status': 'Available' },
-
-    ]
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [address1, setAddress1] = useState('');
+    const [address2, setAddress2] = useState('');
+    const [city, setCity] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [email, setEmail] = useState('');
 
 
+    const [availableDrones, setAvailableDrones] = useState([]);
 
+
+    const getRecommendedDrones = async (weight) => {
+        // const [accessToken] = await getAccessToken();
+
+        const response = await fetch(window.config.choreoApiUrl + '/drone/recommend?' + new URLSearchParams({ weight: weight }), {
+
+            method: 'GET',
+            headers: {
+                // 'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            params: {
+                weight: weight
+            }
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                setAvailableDrones(data);
+            })
+    }
+
+    const next = () => {
+        if (pageNo < 4) {
+            setActiveStep(activeStep + 1);
+            console.log(pageNo);
+            setPageNo(pageNo => {
+                const updatedPageNo = pageNo + 1;
+                if (updatedPageNo == 2) {
+                    // submit order
+                    getRecommendedDrones(totalWeight);
+                }
+                console.log(updatedPageNo);
+                return updatedPageNo;
+            });
+        }
+    }
+    const prev = () => {
+        if (pageNo > 1) {
+            setActiveStep(activeStep - 1);
+            setPageNo(pageNo => {
+                const updatedPageNo = pageNo - 1;
+                if (updatedPageNo == 2) {
+                    // submit order
+                    getRecommendedDrones(totalWeight);
+                }
+                console.log(updatedPageNo);
+                return updatedPageNo;
+            });
+        }
+    }
 
     return (
-        <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'C9C9C9'} >
+        <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'#C9C9C9'} >
 
             {/* <Grid height={'100%'} templateColumns="repeat(6, 1fr)" w={'100%'} gap={6} > */}
             <Flex
+                borderBottomLeftRadius={'0px'} borderTopLeftRadius={'0px'}
+
+                backgroundColor={'white'}
+                borderRight={'1px solid #E5E7EB'}
                 display={'flex'} flexDirection={'column'} height={'100%'} width={'20%'}
                 colSpan={2} p={'20px'}
                 alignContent={'center'}
@@ -157,7 +211,7 @@ const Overview = () => {
             </Flex>
             {pageNo == 1 ? (
                 <>
-                    <Flex overflowY={'auto'} maxHeight={'90vh'} backgroundColor={'white'} borderRadius={'10px'} borderBottomRightRadius={'0px'} borderTopRightRadius={'0px'}
+                    <Flex overflowY={'auto'} maxHeight={'90vh'} backgroundColor={'white'}
                         display={'flex'} flexDirection={'column'} height={'100%'} width={'40%'}
                         colSpan={2} p={'20px'}
                         borderRight={
@@ -210,21 +264,22 @@ const Overview = () => {
                                         meds.map((med) => (
                                             <><Tr>
 
-                                                <Td>{med.code}</Td>
+                                                <Td>{med.medID}</Td>
                                                 <Td>{med.name}</Td>
                                                 <Td>{med.weight}</Td>
-                                                <Td><Button onClick={
-                                                    () => {
-                                                        if (droneCart.some(item => item.code === med.code)) {
-                                                            // update quantity
-                                                            setDroneCart(droneCart.map(item => item.code === med.code ? { ...item, quantity: item.quantity + 1 } : item))
-                                                        } else {
-                                                            // add med with quantity 1
-                                                            setDroneCart([...droneCart, { ...med, quantity: 1 }])
-                                                        }
+                                                <Td><IconButton icon={<SmallAddIcon />}
+                                                    onClick={
+                                                        () => {
+                                                            if (droneCart.some(item => item.medID === med.medID)) {
+                                                                // update quantity
+                                                                setDroneCart(droneCart.map(item => item.medID === med.medID ? { ...item, quantity: item.quantity + 1 } : item))
+                                                            } else {
+                                                                // add med with quantity 1
+                                                                setDroneCart([...droneCart, { ...med, quantity: 1 }])
+                                                            }
 
-                                                    }
-                                                } colorScheme={'messenger'}>+</Button></Td>
+                                                        }
+                                                    } colorScheme={'messenger'} /></Td>
                                             </Tr>
                                             </>
                                         ))
@@ -236,155 +291,209 @@ const Overview = () => {
                         </Flex>
                     </Flex>
 
-                    <GridItem flex={1} colSpan={4} height={'100%'} justifyContent={'center'} borderRadius={'10px'} alignItems={'center'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} w={'40%'}>
+                    <Flex flexDirection={'column'} flex={1} colSpan={4} height={'100%'} width={'100%'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'center'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} w={'40%'}>
                         <Text>
                             Max Weight Supported is 500g
                         </Text>
-                        {droneCart.length > 0 ? (
+                        <Flex gap={'20px'} flexDirection={'column'} overflowY={'auto'} flex={1} width={'100%'} maxHeight={'70vh'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'20px'} border={'1px solid #82828245'} >
 
-                            droneCart.map((item) => (
+                            {droneCart.length > 0 ? (
 
-                                <Flex flexDirection={'column'} gap={'10px'}>
-                                    <Text fontSize={'18px'} fontWeight={'bold'}>{item.name}</Text>
-                                    <Text fontSize={'14px'} fontWeight={'bold'}>Weight: {item.weight}</Text>
-                                    <Text fontSize={'14px'} fontWeight={'bold'}>Quantity: {item.quantity}</Text>
+                                droneCart.map((item) => (
 
-                                    <Button onClick={
-                                        () => {
-                                            setDroneCart(droneCart.filter((med) => med.code !== item.code))
-                                        }
-                                    } colorScheme={'red'}>Remove</Button>
+                                    <Card>
+                                        <CardBody display={'flex'} alignItems={'center'} flexDirection={'row'} justifyContent={'space-between'} gap={'10px'}>
+                                            <Flex flexDirection={'row'} gap={'10px'} width={'80%'} alignItems={'center'} justifyContent={'space-between'}>
+                                                <Flex flexDirection={'column'}>
 
-                                </Flex>
+                                                    <Text fontSize={'18px'} fontWeight={'medium'}>{item.name}</Text>
+                                                    <Text fontSize={'14px'} fontWeight={'normal'}>{item.medID}</Text>
+                                                </Flex>
+                                                <Flex flexDirection={'column'} alignItems={'center'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'5px'} >
+                                                    <Text fontSize={'18px'} fontWeight={'medium'}> {item.weight}g</Text>
+                                                    <Text fontSize={'14px'} fontWeight={'normal'}>Weight</Text>
+
+                                                </Flex>
+                                                <Text fontSize={'14px'} fontWeight={''}>Quantity: {item.quantity}</Text>
+                                            </Flex>
+                                            <IconButton onClick={
+                                                () => {
+                                                    setDroneCart(droneCart.filter((med) => med.medID !== item.medID))
+                                                }
+                                            }
+                                                aria-label='Remove Item' icon={<DeleteIcon />} colorScheme={'red'} />
+
+                                        </CardBody>
+
+                                    </Card>
 
 
 
-                            )
-                            ))
-                            : (
-                                <Text> No Items have been added to the cart</Text>)
-                        }
-                        <Text>
-                            Total Weight: {droneCart.reduce((a, b) => a + (b['weight'] * b['quantity']), 0)}
-                        </Text>
-                        <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                            next()
-                        }}>
-                            Next
-                        </Button>
+                                )
+                                ))
+                                : (
+                                    <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                                        <Text opacity={'0.5'} fontWeight={'normal'}> No Items have been added to the cart</Text>
+                                    </Flex>
+                                )
+                            }
+                        </Flex>
+                        <Flex flexDirection={'row'} gap={'10px'} width={'100%'} alignItems={'center'} justifyContent={'space-between'}>
+                            <Text>
+                                Total Weight:&nbsp;<Text color={totalWeight > 500 ? 'red' : 'black'} fontWeight={'medium'} display={'inline'}>{totalWeight}g</Text>
 
-                    </GridItem>
+                            </Text>
+                            <Button isDisabled={totalWeight > 500 || droneCart.length == 0} colorScheme='messenger' fontWeight={'medium'}
+                                onClick={() => {
+                                    next()
+                                }}>
+                                Next
+                            </Button>
+                        </Flex>
+                    </Flex>
                 </>
             ) : pageNo == 2 ? (
                 <>
 
-                    <Card flex={1} colSpan={4} height={'100%'} position={'relative'} justifyContent={'center'} borderRadius={'10px'} alignItems={'flex-start'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
+                    <Card gap={'4px'} flex={1} colSpan={4} height={'100%'} position={'relative'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'flex-start'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
                         <Flex flexDirection={'column'}>
-
-                            <Text>Available Drones</Text>
-                            <Text>You are recommended to use <b>Lightweight</b> for your current order</Text>
+                            <Heading size={'md'}>Available Drones</Heading>
+                            <Text>
+                                Availabilty of drones may vary based on the weight of the items selected
+                            </Text>
                         </Flex>
-                        <Grid flex={1} flexWrap={'wrap'} width={'100%'} borderRadius={'10px'} gap={'10px'} backgroundColor={'#E5E7EB'} gridTemplateColumns="repeat(4, 1fr)" p={'20px'} overflow={'auto'} maxHeight={'70vh'} gridTemplateRows="repeat(3, 1fr)" border={'1px solid #828282'} >
+                        <Flex flex={1} flexDirection={'row'} flexWrap={'wrap'} width={'100%'} borderRadius={'10px'} gap={'10px'} backgroundColor={'#E5E7EB'} p={'20px'} overflow={'auto'} maxHeight={'70vh'} border={'1px solid #82828245'} >
                             {availableDrones.map((drone) => (
-                                <Card key={drone.UUID} alignSelf={'flex-start'} padding={'20px'} onClick={() => {
-                                    if (selectedDrone?.UUID == drone.UUID) {
+                                <Card key={drone.uuid} alignSelf={'flex-start'} padding={'0px'} onClick={() => {
+                                    if (selectedDrone?.uuid == drone.uuid) {
                                         setSelectedDrone(null);
                                     } else {
                                         setSelectedDrone(drone);
                                     }
-                                }} border={selectedDrone?.UUID == drone.UUID ? '2px solid #4C51BF' : '1px solid #E5E7EB'} borderRadius={'10px'} backgroundColor={'white'} flexDirection={'column'} gap={'10px'} width={'100%'} height={'100%'}>
+                                }} cursor={'pointer'} border={selectedDrone?.uuid == drone.uuid ? '5px solid #4C51BF' : '1px solid #E5E7EB'} borderRadius={'10px'} backgroundColor={'white'} flexDirection={'column'} gap={'5px'} width={'20rem'} >
+                                    <CardBody>
+                                        <Box pl={'10px'} borderLeft={'5px solid black'}>
 
-                                    <Text fontSize={'18px'} fontWeight={'bold'}>{drone.name}</Text>
-                                    <Text fontSize={'14px'} fontWeight={'bold'}>Model: {drone.model}</Text>
-                                    <Text fontSize={'14px'} fontWeight={'bold'}>UUID: {drone.UUID}</Text>
-                                    <Text fontSize={'14px'} fontWeight={'bold'}>Status: {drone.status}</Text>
-
+                                            <Text fontSize={'18px'} fontWeight={'medium'}>{drone.name}</Text>
+                                            <Text fontSize={'14px'} fontWeight={'normal'}>Model: {drone._model.name}</Text>
+                                            <Text fontSize={'14px'} fontWeight={'normal'}>UUID: {drone.uuid}</Text>
+                                        </Box>
+                                    </CardBody>
 
                                 </Card>
                             ))}
-                        </Grid>
-                        <Flex position={'relative'} bottom={0} gap={'10px'}>
+                        </Flex>
+                        <Flex position={'relative'} bottom={0} gap={'10px'} width={'100%'} justifyContent={'flex-end'}>
+                            <Flex gap={'10px'}>
 
-                            <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                prev()
-                            }}>
-                                Previous
-                            </Button>
-                            <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                next()
-                            }}>
-                                Next
-                            </Button>
+                                <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
+                                    prev()
+                                }} fontWeight={'medium'}
+                                >
+                                    Previous
+                                </Button>
+                                <Button isDisabled={selectedDrone == null} onClick={() => {
+                                    next()
+                                }} fontWeight={'medium'}>
+                                    Next
+                                </Button>
+                            </Flex>
                         </Flex>
 
                     </Card>
                 </>
-            ) : (
+            ) : pageNo == 3 ? (
+                <>
+                    <Card flex={1} colSpan={4} height={'100%'} position={'relative'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'flex-start'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
+                        <Flex flexDirection={'column'} gap={'10px'} width={'100%'}>
+
+                            <Heading>
+                                Enter Delivery Details
+                            </Heading>
+                            <Flex flexDirection={'column'} gap={'20px'} width={'100%'} p={'20px'}>
+                                <Flex gap={'10px'}>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>First Name</FormLabel>
+                                        <Input placeholder="eg: John" />
+                                    </InputGroup>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>Last Name</FormLabel>
+                                        <Input placeholder="eg: Appleseed" />
+                                    </InputGroup>
+                                </Flex>
+                                <Flex gap={'10px'}>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>Address Line 1</FormLabel>
+                                        <Input placeholder="eg: 123, Main Street" />
+                                    </InputGroup>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>Address Line 2</FormLabel>
+                                        <Input placeholder="eg: Temple Road" />
+                                    </InputGroup>
+                                </Flex>
+                                <Flex gap={'10px'}>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>City</FormLabel>
+                                        <Input placeholder="eg: 123, Main Street" />
+                                    </InputGroup>
+
+                                </Flex>
+                                <Flex gap={'10px'}>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>Mobile No.</FormLabel>
+                                        <Input placeholder="eg: 0771231234" />
+                                    </InputGroup>
+                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                        <FormLabel>E-Mail Address</FormLabel>
+                                        <Input placeholder="eg: john@droneaid.com" />
+                                    </InputGroup>
+                                </Flex>
+
+                            </Flex>
+                        </Flex>
+
+                        <Flex gap={'20px'} width={'100%'} justifyContent={'flex-end'}>
+                            <Flex position={'relative'} bottom={0} gap={'10px'}>
+
+                                <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
+                                    prev()
+                                }} fontWeight={'medium'}>
+                                    Previous
+                                </Button>
+                                <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
+                                    next()
+                                }} colorScheme='messenger' fontWeight={'medium'}>
+                                    Finish
+                                </Button >
+                            </Flex>
+                        </Flex>
+
+                    </Card>
+                </>
+            ) : pageNo == 4 ? (
                 <>
 
 
-                    <Card flex={1} colSpan={4} height={'100%'} position={'relative'} justifyContent={'flex-start'} borderRadius={'10px'} alignItems={'flex-start'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
+                    <Card flex={1} colSpan={4} height={'100%'} position={'relative'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'flex-start'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
+                        <Flex alignItems={'center'} justifyContent={'center'} flexDirection={'column'} gap={'10px'} width={'100%'}>
 
-                        <Heading>
-                            Enter Delivery Details
-                        </Heading>
-                        <Flex flexDirection={'column'} gap={'20px'} width={'100%'} p={'20px'}>
-                            <Flex gap={'10px'}>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>First Name</FormLabel>
-                                    <Input placeholder="eg: 123, Main Street" />
-                                </InputGroup>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>Last Name</FormLabel>
-                                    <Input placeholder="eg: 123, Main Street" />
-                                </InputGroup>
+                            <Heading>
+                                Delivery Placed!
+                            </Heading>
+                            <Flex flexDirection={'column'} gap={'20px'} width={'100%'} p={'20px'} alignItems={'center'} justifyContent={'space-even'}>
+                                <Flex flexDirection={'column'} gap={'10px'} width={'100%'} p={'20px'} justifyContent={'center'} alignItems={'center'}>
+                                    <Image src={flyingDrone} width={'300px'} height={'auto'} opacity={'20%'} />
+                                </Flex>
+                                <Button width={'20%'} colorScheme='messenger'>
+                                    Create New Order
+                                </Button>
                             </Flex>
-                            <Flex gap={'10px'}>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>Address Line 1</FormLabel>
-                                    <Input placeholder="eg: 123, Main Street" />
-                                </InputGroup>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>Address Line 2</FormLabel>
-                                    <Input placeholder="eg: Colombo" />
-                                </InputGroup>
-                            </Flex>
-                            <Flex gap={'10px'}>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>City</FormLabel>
-                                    <Input placeholder="eg: 123, Main Street" />
-                                </InputGroup>
-
-                            </Flex>
-                            <Flex gap={'10px'}>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>Mobile No.</FormLabel>
-                                    <Input placeholder="eg: 123, Main Street" />
-                                </InputGroup>
-                                <InputGroup flexDirection={'column'} width={'50%'} >
-                                    <FormLabel>E-Mail Address</FormLabel>
-                                    <Input placeholder="eg: Colombo" />
-                                </InputGroup>
-                            </Flex>
-
-                        </Flex>
-                        <Flex position={'relative'} bottom={0} gap={'10px'}>
-
-                            <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                prev()
-                            }}>
-                                Previous
-                            </Button>
-                            <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                next()
-                            }}>
-                                Next
-                            </Button>
                         </Flex>
 
                     </Card>
                 </>
-            )}
+            ) : null
+            }
         </Card>
 
     )
