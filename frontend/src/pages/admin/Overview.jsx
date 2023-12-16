@@ -44,7 +44,7 @@ import dji from '../../assets/dji.png'
 
 const Overview = () => {
     const { getAccessToken } = useAuthContext();
-    const [droneDataLoading,setDroneDataLoading] = useState(null);
+    const [droneDataLoading, setDroneDataLoading] = useState(null);
     const [drones, setDrones] = useState(null);
     const [droneData, setDroneData] = useState(null);
     const navigate = useNavigate();
@@ -316,12 +316,12 @@ function DroneRegister({ getDrones }) {
         }
     }, [isOpen]);
     const getModelDetails = async () => {
-        // const [accessToken] = await getAccessToken();
+        const [accessToken] = await getAccessToken();
 
         const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
             method: 'GET',
             headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
+                'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
             }
         })
@@ -332,10 +332,11 @@ function DroneRegister({ getDrones }) {
             })
     }
     const onSubmit = async () => {
+        const [accessToken] = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
             method: 'POST',
             headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
+                'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(
@@ -411,16 +412,17 @@ function DroneRegister({ getDrones }) {
     )
 }
 
-function DeleteDialog({ uuid, getdrones,setDroneData,setSelectedDrone }) {
+function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     const toast = useToast()
 
     const deleteFn = async () => {
+        const [accessToken] = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'PATCH',
             headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
+                'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
             },
         })

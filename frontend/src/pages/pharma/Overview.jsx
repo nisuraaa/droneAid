@@ -123,13 +123,13 @@ const Overview = () => {
 
 
     const getRecommendedDrones = async (weight) => {
-        // const [accessToken] = await getAccessToken();
+        const [accessToken] = await getAccessToken();
 
         const response = await fetch(window.config.choreoApiUrl + '/drone/recommend?' + new URLSearchParams({ weight: weight }), {
 
             method: 'GET',
             headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
+                'Authorization': 'Bearer ' + accessToken,
                 'Content-Type': 'application/json'
             },
             params: {
