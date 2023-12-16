@@ -147,8 +147,8 @@ const Overview = () => {
                         drones != null ? drones?.map((drone) => (
                             <Card cursor={'pointer'} onClick={() => {
                                 setSelectedDrone(drone)
-                                getDroneDetails(drone?.uuid);
-                            }} key={drone?.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.uuid === drone?.uuid ? 'white' : '#F3F4F6'} border={selectedDrone?.uuid === drone?.uuid ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
+                                getDroneDetails(drone.uuid);
+                            }} key={drone.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.uuid === drone.uuid ? 'white' : '#F3F4F6'} border={selectedDrone?.uuid === drone?.uuid ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
                                 <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'5px'}>
                                     <Text>{drone?.name}</Text>
                                     <Tag colorScheme="grey">{drone?.status.toUpperCase()}</Tag>
