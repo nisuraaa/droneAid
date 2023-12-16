@@ -303,6 +303,7 @@ const Overview = () => {
 
 
 function DroneRegister({ getDrones }) {
+    const { getAccessToken } = useAuthContext();
 
     const toast = useToast()
     const [serial, setSerial] = useState(null);
