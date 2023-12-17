@@ -51,7 +51,7 @@ const Overview = () => {
     const { state, getBasicUserInfo, signOut } = useAuthContext();
     useEffect(() => {
         getBasicUserInfo().then((info) => {
-            console.log(info);
+            // console.log(info);
         });
         getdrones();
 
@@ -59,7 +59,7 @@ const Overview = () => {
     const getDroneDetails = async (uuid) => {
         console.log(uuid);
         const accessToken = await getAccessToken();
-
+        console.log("all "+accessToken);
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'GET',
             headers: {
@@ -318,8 +318,9 @@ function DroneRegister({ getDrones }) {
         }
     }, [isOpen]);
     const getModelDetails = async () => {
-        const [accessToken] = await getAccessToken();
         try {
+            const [accessToken] = await getAccessToken();
+            console.log("model "+accessToken);
 
             const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
                 method: 'GET',
@@ -438,7 +439,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     const toast = useToast()
-
+ 
     const deleteFn = async () => {
         const [accessToken] = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
