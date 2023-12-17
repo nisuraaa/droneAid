@@ -319,8 +319,8 @@ function DroneRegister({ getDrones }) {
     }, [isOpen]);
     const getModelDetails = async () => {
         try {
-            const [accessToken] = await getAccessToken();
-            console.log("model "+accessToken);
+            const accessToken = await getAccessToken();
+            console.log("model "+ accessToken);
 
             const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
                 method: 'GET',
@@ -355,7 +355,7 @@ function DroneRegister({ getDrones }) {
         }
     }
     const onSubmit = async () => {
-        const [accessToken] = await getAccessToken();
+        const accessToken= await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
             method: 'POST',
             headers: {
