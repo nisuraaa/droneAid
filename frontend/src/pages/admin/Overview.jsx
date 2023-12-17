@@ -198,7 +198,11 @@ const Overview = () => {
                             }} key={drone.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.uuid === drone.uuid ? 'white' : '#F3F4F6'} border={selectedDrone?.uuid === drone?.uuid ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
                                 <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'5px'}>
                                     <Text>{drone?.name}</Text>
-                                    <Tag colorScheme="grey">{drone?.status.toUpperCase()}</Tag>
+                                    <Flex gap={'10px'}>
+                                        <Tag colorScheme={drone?.status === 'idle' ? 'green' : drone?.status === 'charging' ? 'yellow' : 'red '}
+                                        >{drone?.status.toUpperCase()}</Tag>
+                                        <Tag colorScheme='messenger' fontSize={'16px'}>{drone?.battery}</Tag>
+                                    </Flex>
                                 </Flex>
                             </Card>
                         )) : (

@@ -50,9 +50,7 @@ const Topbar = ({ routes }) => {
     return (
         <Flex zIndex={100}
             color={'white'} height={'58px'} width={'100%'} justifyContent={'center'} alignItems={'center'}  >
-            <Flex width={'99%'} height={'100%'} background={
-                user?.applicationRoles == "administrator" ? 'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(101,35,153,1) 100%)' : 'linear-gradient(120deg, rgba(66,66,66,1) 50%, rgba(255, 107, 193,1) 150%)'
-            } borderBottomLeftRadius={'10px'} borderBottomRightRadius={'10px'}
+            <Flex width={'99%'} height={'100%'} borderBottomLeftRadius={'10px'} borderBottomRightRadius={'10px'}
                 justifyContent={'space-between'} p={'0px 10px'} pl={'30px'} alignItems={'center'} >
 
                 {/* {JSON.stringify(routes)} */}

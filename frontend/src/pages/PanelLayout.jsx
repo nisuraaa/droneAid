@@ -52,7 +52,7 @@ const PanelLayout = ({routes}) => {
 
     return (
 
-        <Flex height={'100vh'} width={'100vw'} backgroundColor={'#C9C9C9'} justifyContent={'flex-start'} flexDirection={'column'} alignItems={'center'} >
+        <Flex height={'100vh'} width={'100vw'} backgroundColor={'#424242'} justifyContent={'flex-start'} flexDirection={'column'} alignItems={'center'} >
             <Topbar routes={routes} />
             <Flex flex={1} width={'100%'}  alignItems={'center'} justifyContent={'center'} p={'0px 0px'}  >
                 <Outlet />
