@@ -344,7 +344,7 @@ function DroneRegister({ getDrones }) {
                         return;
                     }else{
                         
-                        // setModelData(data);
+                        setModelData(data);
                     }
                 })
         }
