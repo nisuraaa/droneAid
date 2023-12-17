@@ -52,7 +52,7 @@ import {
 
 import flyingDrone from '../../assets/pin.png'
 import DroneImg from '../../assets/uav-quadcopter.svg'
-import dji from '../../assets/dji.png'
+import dji from '../../assets/dronemodels/lightw.png'
 
 
 

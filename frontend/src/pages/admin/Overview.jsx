@@ -12,6 +12,7 @@ import {
     ModalFooter,
     useToast,
     AlertDialog,
+    Spinner,
     AlertDialogBody,
     AlertDialogFooter,
     AlertDialogHeader,
@@ -36,10 +37,15 @@ import {
     TableCaption,
     TableContainer,
 } from '@chakra-ui/react'
-
+import './animation.css'
 import DroneImg from '../../assets/uav-quadcopter.svg'
-import dji from '../../assets/dji.png'
 
+import droneloader from '../../assets/drone-loader.svg'
+
+import cruiserimg from '../../assets/dronemodels/cruiserw.png'
+import largeimg from '../../assets/dronemodels/largew.png'
+import lightimg from '../../assets/dronemodels/lightw.png'
+import middlew from '../../assets/dronemodels/middlew.png'
 
 
 const Overview = () => {
@@ -56,10 +62,11 @@ const Overview = () => {
         getdrones();
 
     }, []);
+    const [isDroneInfoLoading, setIsDroneInfoLoading] = useState(true);
+
     const getDroneDetails = async (uuid) => {
-        console.log(uuid);
+        setIsDroneInfoLoading(true);
         const accessToken = await getAccessToken();
-        console.log("all "+accessToken);
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'GET',
             headers: {
@@ -70,12 +77,50 @@ const Overview = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
+                // setDroneData([]);
                 setDroneData(data);
+                setIsDroneInfoLoading(false);
             })
 
     }
 
+    const [batteryloading, setBatteryLoading] = useState(false);
     const [isAllDronesLoading, setIsAllDronesLoading] = useState(true);
+    const toggleCharge = async (uuid, charge) => {
+        const accessToken = await getAccessToken();
+        setBatteryLoading(true);
+        console.log(accessToken);
+        const response = await fetch(window.config.choreoApiUrl + '/drone/changestatus/', {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    "droneUUID": uuid,
+                    "status": charge ? 'charging' : 'idle'
+                }
+            )
+        })
+            .then((response) => response.json())
+            .then((data) => {
+
+                setDrones((prevDrones) => {
+                    const updatedDrones = prevDrones.map((drone) =>
+                        drone.uuid === uuid ? { ...drone, status: charge ? 'charging' : 'idle' } : drone
+                    );
+                    return updatedDrones;
+                });
+                setDroneData((prevDroneData) => {
+                    const updatedDroneData = { ...prevDroneData, status: charge ? 'charging' : 'idle' };
+                    return updatedDroneData;
+                });
+                setBatteryLoading(false);
+            })
+    }
+
+
     const getdrones = async () => {
         setIsAllDronesLoading(true);
         const accessToken = await getAccessToken();
@@ -143,8 +188,9 @@ const Overview = () => {
                     p={'10px'}  // Add padding to the Box
                 >
 
-                    {
-                        drones != null ? drones?.map((drone) => (
+                    {!isAllDronesLoading ? (
+
+                        drones.length > 0 ? drones?.map((drone) => (
                             <Card cursor={'pointer'} onClick={() => {
                                 setSelectedDrone(drone)
                                 getDroneDetails(drone.uuid);
@@ -154,35 +200,41 @@ const Overview = () => {
                                     <Tag colorScheme="grey">{drone?.status.toUpperCase()}</Tag>
                                 </Flex>
                             </Card>
-                        )) :
-                            isAllDronesLoading ? (
-                                <>
-                                    <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
-                                        <Box flexDirection={'row'} p={'10px'}>
-                                            <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
-                                        </Box>
-                                    </Card>
-                                    <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
-                                        <Box flexDirection={'row'} p={'10px'}>
-                                            <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
-                                        </Box>
-                                    </Card>
-                                    <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
-                                        <Box flexDirection={'row'} p={'10px'}>
-                                            <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
-                                        </Box>
-                                    </Card>
-                                    <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
-                                        <Box flexDirection={'row'} p={'10px'}>
-                                            <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
-                                        </Box>
-                                    </Card>
-                                </>
-                            ) : (
-                                <Flex height={'100%'} justifyContent="center" alignItems="center" color={'grey'}>
-                                    No Drones have been added yet
-                                </Flex>
-                            )
+                        )) : (
+                            <Flex height={'100%'} justifyContent="center" alignItems="center" color={'grey'}>
+                                No Drones have been added yet
+                            </Flex>
+                        )
+                    ) : (
+                        <>
+                            <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
+                                <Box flexDirection={'row'} p={'10px'}>
+                                    <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
+                                </Box>
+                            </Card>
+                            <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
+                                <Box flexDirection={'row'} p={'10px'}>
+                                    <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
+                                </Box>
+                            </Card>
+                            <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
+                                <Box flexDirection={'row'} p={'10px'}>
+                                    <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
+                                </Box>
+                            </Card>
+                            <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
+                                <Box flexDirection={'row'} p={'10px'}>
+                                    <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
+                                </Box>
+                            </Card>
+                            <Card cursor={'pointer'} p={'10px'} borderRadius={'10px'} backgroundColor='white' border='1px solid #F3F4F6' >
+                                <Box flexDirection={'row'} p={'10px'}>
+                                    <SkeletonText mt='4' noOfLines={2} spacing='4' skeletonHeight='2' />
+                                </Box>
+                            </Card>
+                        </>
+
+                    )
                     }
 
                 </Flex>
@@ -199,12 +251,12 @@ const Overview = () => {
                             Select a drone from the list to view its details
                         </Text>
                     </Flex>
-                ) : selectedDrone && !droneData ? (
+                ) : isDroneInfoLoading ? (
                     <Flex flexDir={
                         'column'
-                    } justifyContent={'center'} alignItems={'center'} height={'100%'} >
+                    } justifyContent={'center'} alignItems={'center'} height={'100%'} opacity={0.5}>
 
-                        <Image src={DroneImg} width={'50%'} opacity={0.1} />
+                        <Image src={droneloader} width={'10%'} className='swing-in-left-bck' margin={'30px'} />
                         <Text>
                             Loading
                         </Text>
@@ -213,12 +265,15 @@ const Overview = () => {
                     : (
                         <Flex flexDirection={'column'} height={'100%'} >
                             <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} p={'20px'} borderBottom={'1px solid #E5E7EB'} >
-                                <Image src={dji} height={'250px'} width={'300px'} objectFit={'cover'} />
+                                <Image src={
+                                    droneData?._model?.modelID === 'LW' ? lightimg : droneData?._model?.modelID === 'MW' ? middlew : droneData?._model?.modelID === 'HW' ? largeimg : cruiserimg
+
+                                } height={'250px'} width={'300px'} objectFit={'contain'} />
                                 <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={'10px'}>
 
                                     <Heading fontWeight={'300px'} ml={'10px'}>{selectedDrone.uid}</Heading>
                                     <Box>
-                                        <Tag>{selectedDrone.status.toUpperCase()
+                                        <Tag>{droneData?.status.toUpperCase()
                                         }</Tag>
                                     </Box>
                                 </Flex>
@@ -258,33 +313,55 @@ const Overview = () => {
                                                 <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
                                             </Flex>
                                         </Flex>
-                                        <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
-                                            <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
+                                        <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'} w={'50%'} h={'100%'}>
+                                            {!batteryloading ? (
+                                                <>
+                                                    <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
 
-                                                <Flex flexDirection={'column'} width={'70%'} gap={'10px'}>
-                                                    <Text>
-                                                        Battery Level
-                                                    </Text>
-                                                    <Text>
-                                                        Battery Status
-                                                    </Text>
-                                                    <Text>
-                                                        Last Charged
-                                                    </Text>
+                                                        <Flex flexDirection={'column'} width={'70%'} gap={'10px'}>
+                                                            <Text>
+                                                                Battery Level
+                                                            </Text>
+                                                            <Text>
+                                                                Battery Status
+                                                            </Text>
+                                                            <Text>
+                                                                Last Charged
+                                                            </Text>
+                                                        </Flex>
+                                                        <Flex flexDirection={'column'} gap={'10px'} width={'30%'}>
+                                                            <Text>
+                                                                {droneData?.battery} %
+                                                            </Text>
+                                                            <Text>
+                                                                {
+                                                                    droneData?.status === 'charging' ? 'Charging' : 'Discharging'
+                                                                }
+                                                            </Text>
+                                                            <Text>
+                                                                2 Hours Ago
+                                                            </Text>
+                                                        </Flex>
+                                                    </Flex>
+                                                </>
+                                            ) : (
+                                                <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
+
+                                                    <Spinner />
                                                 </Flex>
-                                                <Flex flexDirection={'column'} gap={'10px'} width={'30%'}>
-                                                    <Text>
-                                                        {droneData?.battery} %
-                                                    </Text>
-                                                    <Text>
-                                                        Discharging
-                                                    </Text>
-                                                    <Text>
-                                                        2 Hours Ago
-                                                    </Text>
-                                                </Flex>
-                                            </Flex>
-                                            <Button mt={'10px'} colorScheme={'whatsapp'}>Charge</Button>
+                                            )
+                                            }
+                                            <Button mt={'10px'} colorScheme={droneData?.status === 'charging' ? 'yellow' : 'whatsapp'} isLoading={batteryloading}
+                                                onClick={
+                                                    () => {
+                                                        toggleCharge(droneData?.uuid, droneData?.status === 'idle' ? true : false)
+                                                    }
+                                                }
+                                            >
+                                                {
+                                                    droneData?.status === 'charging' ? 'Stop Charging' : 'Start Charging'
+                                                }
+                                            </Button>
                                             <Text fontSize={'12px'} color={'grey'}>
                                                 Charge mode can only be enabled when drone is idle
                                             </Text>
@@ -320,8 +397,6 @@ function DroneRegister({ getDrones }) {
     const getModelDetails = async () => {
         try {
             const accessToken = await getAccessToken();
-            console.log("model "+ accessToken);
-
             const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
                 method: 'GET',
                 headers: {
@@ -343,8 +418,8 @@ function DroneRegister({ getDrones }) {
                             // isClosable: true,
                         });
                         return;
-                    }else{
-                        
+                    } else {
+
                         setModelData(data);
                     }
                 })
@@ -355,7 +430,7 @@ function DroneRegister({ getDrones }) {
         }
     }
     const onSubmit = async () => {
-        const accessToken= await getAccessToken();
+        const accessToken = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
             method: 'POST',
             headers: {
@@ -439,7 +514,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     const toast = useToast()
- 
+
     const deleteFn = async () => {
         const [accessToken] = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
