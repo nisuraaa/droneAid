@@ -330,6 +330,18 @@ function DroneRegister({ getDrones }) {
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
+                // check if server returns an error
+                if (data?.error) {
+                    toast({
+                        title: 'Error',
+                        description: data?.error?.message,
+                        position: 'bottom-right',
+                        status: 'error',
+                        duration: 5000,
+                        // isClosable: true,
+                    });
+                    return;
+                }
                 setModelData(data);
             })
     }
