@@ -319,36 +319,37 @@ function DroneRegister({ getDrones }) {
     }, [isOpen]);
     const getModelDetails = async () => {
         const [accessToken] = await getAccessToken();
-        try{
+        try {
 
-        const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                // check if server returns an error
-                if (data?.error) {
-                  
-                    return;
+            const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json'
                 }
-                setModelData(data);
             })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    // check if server returns an error
+                    if (data.error_message) {
+                        toast({
+                            title: 'Error',
+                            description: data?.error?.message,
+                            position: 'bottom-right',
+                            status: 'error',
+                            duration: 5000,
+                            // isClosable: true,
+                        });
+                        return;
+                    }else{
+                        
+                        setModelData(data);
+                    }
+                })
         }
-        catch(e){
+        catch (e) {
             console.log(e);
-            toast({
-                title: 'Error',
-                description: data?.error?.message,
-                position: 'bottom-right',
-                status: 'error',
-                duration: 5000,
-                // isClosable: true,
-            });
 
         }
     }
