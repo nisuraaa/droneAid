@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import LandingImage from '../assets/landing.png'
+import LandingImage from '../assets/landing.webp'
 import LandingNav from '../components/LandingNav.jsx'
 import { useAuthContext } from "@asgardeo/auth-react";
 import { Box, Flex, Heading, Image} from '@chakra-ui/react'

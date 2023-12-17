@@ -38,14 +38,15 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 import './animation.css'
+
 import DroneImg from '../../assets/uav-quadcopter.svg'
 
 import droneloader from '../../assets/drone-loader.svg'
 
-import cruiserimg from '../../assets/dronemodels/cruiserw.png'
-import largeimg from '../../assets/dronemodels/largew.png'
-import lightimg from '../../assets/dronemodels/lightw.png'
-import middlew from '../../assets/dronemodels/middlew.png'
+import cruiserimg from '../../assets/dronemodels/cruiserw.svg'
+import largeimg from '../../assets/dronemodels/largew.svg'
+import lightimg from '../../assets/dronemodels/lightw.svg'
+import middlew from '../../assets/dronemodels/middlew.svg'
 
 
 const Overview = () => {
