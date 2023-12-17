@@ -308,7 +308,7 @@ function DroneRegister({ getDrones }) {
 
     const toast = useToast()
     const [serial, setSerial] = useState(null);
-    const [model, setModel] = useState(null);
+    const [model, setModel] = useState([]);
     const [name, setName] = useState(null);
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [modelData, setModelData] = useState([]);
@@ -319,6 +319,7 @@ function DroneRegister({ getDrones }) {
     }, [isOpen]);
     const getModelDetails = async () => {
         const [accessToken] = await getAccessToken();
+        try{
 
         const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
             method: 'GET',
@@ -332,18 +333,24 @@ function DroneRegister({ getDrones }) {
                 console.log(data);
                 // check if server returns an error
                 if (data?.error) {
-                    toast({
-                        title: 'Error',
-                        description: data?.error?.message,
-                        position: 'bottom-right',
-                        status: 'error',
-                        duration: 5000,
-                        // isClosable: true,
-                    });
+                  
                     return;
                 }
                 setModelData(data);
             })
+        }
+        catch(e){
+            console.log(e);
+            toast({
+                title: 'Error',
+                description: data?.error?.message,
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+
+        }
     }
     const onSubmit = async () => {
         const [accessToken] = await getAccessToken();
