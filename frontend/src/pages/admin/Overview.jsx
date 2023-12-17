@@ -43,10 +43,10 @@ import DroneImg from '../../assets/uav-quadcopter.svg'
 
 import droneloader from '../../assets/drone-loader.svg'
 
-import cruiserimg from '../../assets/dronemodels/cruiserw.svg'
-import largeimg from '../../assets/dronemodels/largew.svg'
-import lightimg from '../../assets/dronemodels/lightw.svg'
-import middlew from '../../assets/dronemodels/middlew.svg'
+import cruiserimg from '../../assets/dronemodels/cruiserw.webp'
+import largeimg from '../../assets/dronemodels/largew.webp'
+import lightimg from '../../assets/dronemodels/lightw.webp'
+import middlew from '../../assets/dronemodels/middlew.webp'
 
 
 const Overview = () => {

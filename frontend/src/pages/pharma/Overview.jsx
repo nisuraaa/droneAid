@@ -50,9 +50,8 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 
-import flyingDrone from '../../assets/pin.png'
 import DroneImg from '../../assets/uav-quadcopter.svg'
-import dji from '../../assets/dronemodels/lightw.png'
+
 
 
 
