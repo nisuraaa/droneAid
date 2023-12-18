@@ -23,22 +23,32 @@ router.get('/all', async (req, res) => {
 
 router.post('/createorder', async (req, res) => {
 
-    const { address, email, weight, droneUUID, phone, firstname, lastname } = req.body;
+    const { droneUUID, items, customer, weight } = req.body;
 
+    console.log(req.body);
+    try{
 
-    const order = new MediOrder({
-        address: address,
-        firstname: firstname,
-        lastname: lastname,
-        phone: phone,
-        email: email,
-        weight: weight,
-        droneUUID: droneUUID,
-    });
+        const order = new MediOrder({
+            orderID: generateRandomSerial(),
+            firstname: customer.firstname,
+            lastname: customer.lastname,
+            // items: items,
+            phone: customer.mobile,
+            email: customer.email,
+            weight: weight,
+            address1: customer.address1,
+            address2: customer.address2,
+            city: customer.city,
+            droneUUID: droneUUID,
+        });
+        const savedOrder = await order.save();
+        console.log(await changeStatus(droneUUID, 'delivering'));
+        res.status(200).json({ message: 'Order created successfully', status: 'success' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error', status: 'error' });
+    }
 
-    const savedOrder = await order.save();
-    console.log(await changeStatus(droneUUID, 'delivering'));
-    res.status(200).json({ message: 'Order created successfully', status: 'success' });
 });
 
 router.get('/allorders', async (req, res) => {

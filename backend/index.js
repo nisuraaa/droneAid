@@ -28,7 +28,7 @@ function logMessage() {
     generateLog('all', 'CRON_EVENT', '');
 }
 
-nodeCron.schedule('*/1 * * * *', logMessage);
+nodeCron.schedule('*/60 * * * *', logMessage);
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connected")).catch((error) => console.log(error));
 

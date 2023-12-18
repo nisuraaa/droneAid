@@ -1,15 +1,29 @@
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
-const ObjectId = Schema.ObjectId;
 
 const OrderSchema = new Schema({
 
-    address: {
+    orderID: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    address1: {
         type: String,
         required: true,
 
     },
+    address2: {
+        type: String,
+        required: true,
+
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+
     weight: {
         type: Number,
         required: true,
@@ -18,6 +32,9 @@ const OrderSchema = new Schema({
         type: String,
         maxlength: 30,
         required: true,
+    },
+    items: {
+        type: Array
     },
     lastname: {
         type: String,
@@ -36,6 +53,10 @@ const OrderSchema = new Schema({
         type: String,
         enum: ['delivering', 'delivered'],
         default: 'delivering'
+    },
+    droneUUID: {
+        type: String,
+        required: true,
     },
 });
 
