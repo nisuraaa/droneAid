@@ -79,7 +79,7 @@ const Overview = () => {
         setTotalWeight(droneCart.reduce((a, b) => a + (b['weight'] * b['quantity']), 0))
     }
     useEffect(() => {
-
+        getMedicine();
         calcWeight();
 
 
@@ -87,27 +87,7 @@ const Overview = () => {
         droneCart
     ]);
 
-    const meds = [
-        { name: 'Med 1', weight: 10, medID: "A0001" },
-        { name: 'Med 2', weight: 20, medID: "A0002" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 3', weight: 30, medID: "A0003" },
-        { name: 'Med 4', weight: 40, medID: "A0004" },
-        { name: 'Med 5', weight: 50, medID: "A0005" },
-    ]
+    const [medicine, setMedicine] = useState([]);
 
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
@@ -116,10 +96,81 @@ const Overview = () => {
     const [city, setCity] = useState('');
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
+    const toast = useToast();
+    const submitOrder = async () => {
+        const [accessToken] = await getAccessToken();
 
+        const response = await fetch(window.config.choreoApiUrl + '/medi/createorder', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    "weight": totalWeight,
+                    "droneUUID": selectedDrone.uuid,
+                    "items": droneCart,
+                    "customer": {
+                        "firstname": firstname,
+                        "lastname": lastname,
+                        "address1": address1,
+                        "address2": address2,
+                        "city": city,
+                        "mobile": mobile,
+                        "email": email
+                    }
+                }
+            )
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data.status == 'success') {
+                   toast({
+                        title: "Order Placed",
+                        description: "Your order has been placed successfully",
+                        status: "success",
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                    setPageNo(1);
+                    setDroneCart([]);
+                    setSelectedDrone(null);
+                    setFirstname('');
+                    setLastname('');
+                    setAddress1('');
+                    setAddress2('');
+                    setCity('');
+                    setMobile('');
+                    setActiveStep(0);
+                    setEmail('');
+                    calcWeight();
+
+                    
+                } else {
+                    alert('Error Occured');
+                }
+            })
+    };
 
     const [availableDrones, setAvailableDrones] = useState([]);
 
+    const getMedicine = async () => {
+        const [accessToken] = await getAccessToken();
+
+        const response = await fetch(window.config.choreoApiUrl + '/medi/all', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            }
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setMedicine(data);
+            })
+    };
 
     const getRecommendedDrones = async (weight) => {
         const [accessToken] = await getAccessToken();
@@ -204,7 +255,7 @@ const Overview = () => {
 
                             <StepSeparator />
                         </Step>
-                    ))}     
+                    ))}
                 </Stepper>
 
             </Flex>
@@ -260,18 +311,18 @@ const Overview = () => {
                                 <Tbody>
 
                                     {
-                                        meds.map((med) => (
+                                        medicine.map((med) => (
                                             <><Tr>
 
-                                                <Td>{med.medID}</Td>
+                                                <Td>{med.mediID}</Td>
                                                 <Td>{med.name}</Td>
                                                 <Td>{med.weight}</Td>
                                                 <Td><IconButton icon={<SmallAddIcon />}
                                                     onClick={
                                                         () => {
-                                                            if (droneCart.some(item => item.medID === med.medID)) {
+                                                            if (droneCart.some(item => item.mediID === med.mediID)) {
                                                                 // update quantity
-                                                                setDroneCart(droneCart.map(item => item.medID === med.medID ? { ...item, quantity: item.quantity + 1 } : item))
+                                                                setDroneCart(droneCart.map(item => item.mediID === med.mediID ? { ...item, quantity: item.quantity + 1 } : item))
                                                             } else {
                                                                 // add med with quantity 1
                                                                 setDroneCart([...droneCart, { ...med, quantity: 1 }])
@@ -317,7 +368,7 @@ const Overview = () => {
                                             </Flex>
                                             <IconButton onClick={
                                                 () => {
-                                                    setDroneCart(droneCart.filter((med) => med.medID !== item.medID))
+                                                    setDroneCart(droneCart.filter((med) => med.mediID !== item.mediID))
                                                 }
                                             }
                                                 aria-label='Remove Item' icon={<DeleteIcon />} colorScheme={'red'} />
@@ -371,7 +422,7 @@ const Overview = () => {
                                     }
                                 }} cursor={'pointer'} border={selectedDrone?.uuid == drone.uuid ? '5px solid #4C51BF' : '1px solid #E5E7EB'} borderRadius={'10px'} backgroundColor={'white'} flexDirection={'column'} gap={'5px'} width={'20rem'} >
                                     <CardBody>
-                                        <Box pl={'10px'} borderLeft={'5px solid black'}>
+                                        <Box pl={'10px'} borderLeft={'5px solid' + (drone._model.name == 'Lightweight' ? '#34eb5b' : drone._model.name == 'Middleweight' ? '#347aeb' : drone._model.name == 'Cruiserweight' ? '#9934eb' : '#ffd000')} >
 
                                             <Text fontSize={'18px'} fontWeight={'medium'}>{drone.name}</Text>
                                             <Text fontSize={'14px'} fontWeight={'normal'}>Model: {drone._model.name}</Text>
@@ -413,38 +464,38 @@ const Overview = () => {
                                 <Flex gap={'10px'}>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>First Name</FormLabel>
-                                        <Input placeholder="eg: John" />
+                                        <Input placeholder="eg: John" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                                     </InputGroup>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>Last Name</FormLabel>
-                                        <Input placeholder="eg: Appleseed" />
+                                        <Input placeholder="eg: Appleseed" value={lastname} onChange={(e) => setLastname(e.target.value)} />
                                     </InputGroup>
                                 </Flex>
                                 <Flex gap={'10px'}>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>Address Line 1</FormLabel>
-                                        <Input placeholder="eg: 123, Main Street" />
+                                        <Input placeholder="eg: 123, Main Street" value={address1} onChange={(e) => setAddress1(e.target.value)} />
                                     </InputGroup>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>Address Line 2</FormLabel>
-                                        <Input placeholder="eg: Temple Road" />
+                                        <Input placeholder="eg: Temple Road" value={address2} onChange={(e) => setAddress2(e.target.value)} />
                                     </InputGroup>
                                 </Flex>
                                 <Flex gap={'10px'}>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>City</FormLabel>
-                                        <Input placeholder="eg: 123, Main Street" />
+                                        <Input placeholder="eg: 123, Main Street" value={city} onChange={(e) => setCity(e.target.value)} />
                                     </InputGroup>
 
                                 </Flex>
                                 <Flex gap={'10px'}>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>Mobile No.</FormLabel>
-                                        <Input placeholder="eg: 0771231234" />
+                                        <Input placeholder="eg: 0771231234" value={mobile} onChange={(e) => setMobile(e.target.value)} />
                                     </InputGroup>
                                     <InputGroup flexDirection={'column'} width={'50%'} >
                                         <FormLabel>E-Mail Address</FormLabel>
-                                        <Input placeholder="eg: john@droneaid.com" />
+                                        <Input placeholder="eg: john@droneaid.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                                     </InputGroup>
                                 </Flex>
 
@@ -460,7 +511,8 @@ const Overview = () => {
                                     Previous
                                 </Button>
                                 <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                    next()
+                                    submitOrder();
+
                                 }} colorScheme='messenger' fontWeight={'medium'}>
                                     Finish
                                 </Button >
@@ -481,7 +533,6 @@ const Overview = () => {
                             </Heading>
                             <Flex flexDirection={'column'} gap={'20px'} width={'100%'} p={'20px'} alignItems={'center'} justifyContent={'space-even'}>
                                 <Flex flexDirection={'column'} gap={'10px'} width={'100%'} p={'20px'} justifyContent={'center'} alignItems={'center'}>
-                                    <Image src={flyingDrone} width={'300px'} height={'auto'} opacity={'20%'} />
                                 </Flex>
                                 <Button width={'20%'} colorScheme='messenger'>
                                     Create New Order
@@ -495,191 +546,6 @@ const Overview = () => {
             }
         </Card>
 
-    )
-}
-
-
-function DroneRegister({ getDrones }) {
-
-    const toast = useToast()
-    const [serial, setSerial] = useState(null);
-    const [model, setModel] = useState(null);
-    const [name, setName] = useState(null);
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const [modelData, setModelData] = useState(null);
-    useEffect(() => {
-        if (isOpen) {
-            getModelDetails();
-        }
-    }, [isOpen]);
-
-
-    const getModelDetails = async () => {
-        // const [accessToken] = await getAccessToken();
-
-        const response = await fetch(window.config.choreoApiUrl + '/drone/models', {
-            method: 'GET',
-            headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            }
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setModelData(data);
-            })
-    }
-    const onSubmit = async () => {
-        const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
-            method: 'POST',
-            headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(
-
-                {
-                    "serial": serial,
-                    "model": model,
-                    "name": name
-                }
-            )
-        })
-            .then((response) => {
-                // console.log(response.status)
-                if (response.status == 200) {
-
-                    onClose();
-                    toast({
-                        title: 'Drone Registered Successfully .',
-                        // description: "We've created your account for you.",
-                        position: 'bottom-right',
-                        status: 'success',
-                        duration: 5000,
-                        // isClosable: true,
-                    });
-                    getDrones();
-                }
-            })
-
-
-    }
-
-    return (
-        <>
-            <Button onClick={onOpen} colorScheme='purple'>+ Add Drones</Button>
-
-            <Modal onClose={onClose} isOpen={isOpen} isCentered>
-                <ModalOverlay />
-                <ModalContent>
-                    <ModalHeader>Register a New Drone</ModalHeader>
-                    <ModalCloseButton />
-                    <ModalBody>
-                        <form>
-                            <Flex flexDirection={'column'} gap={'10px'}>
-                                <InputGroup flexDirection={'column'}>
-                                    <FormLabel>Drone Model</FormLabel>
-                                    <Select placeholder="Select Drone Model" onChange={(e) => setModel(e.target.value)}>
-                                        {
-                                            modelData?.map((model) => (
-                                                <option key={model.modelID} value={model.modelID}>{model.name}</option>
-                                            ))
-                                        }
-                                    </Select>
-                                </InputGroup>
-                                <InputGroup flexDirection={'column'}>
-                                    <FormLabel>Drone Name</FormLabel>
-                                    <Input placeholder="eg: MAVIC" onChange={(e) => setName(e.target.value)} />
-                                </InputGroup>
-                                <InputGroup flexDirection={'column'}>
-                                    <FormLabel>Serial Number</FormLabel>
-                                    <Input placeholder="eg: SN_12345678" onChange={(e) => setSerial(e.target.value)} />
-                                </InputGroup>
-                            </Flex>
-                        </form>
-                    </ModalBody>
-                    <ModalFooter >
-                        <Button onClick={onClose} mr={'5px'} >Close</Button>
-                        <Button onClick={onSubmit} variant='solid' colorScheme='messenger'>Add</Button>
-
-                    </ModalFooter>
-                </ModalContent>
-            </Modal>
-        </>
-    )
-}
-
-function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
-    const { isOpen, onOpen, onClose } = useDisclosure()
-    const cancelRef = React.useRef()
-    const toast = useToast()
-
-    const deleteFn = async () => {
-        const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
-            method: 'PATCH',
-            headers: {
-                // 'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-        })
-            .then((response) => {
-                if (response.status == 200) {
-                    toast({
-                        title: 'Drone Deleted',
-                        // description: "We've created your account for you.",
-                        position: 'bottom-right',
-                        status: 'error',
-                        duration: 5000,
-                        // isClosable: true,
-                    });
-                    onClose();
-                    getdrones();
-                    setSelectedDrone(null);
-                    setDroneData(null);
-                }
-            })
-    }
-
-    return (
-        <>
-            <Button colorScheme='red' onClick={onOpen}>
-                Remove
-            </Button>
-
-            <AlertDialog
-                motionPreset='slideInBottom'
-                isOpen={isOpen}
-                leastDestructiveRef={cancelRef}
-                onClose={onClose}
-                isCentered
-            >
-                <AlertDialogOverlay>
-                    <AlertDialogContent>
-                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-                            Delete Drone
-                        </AlertDialogHeader>
-
-                        <AlertDialogBody>
-                            Are you sure? You can't undo this action afterwards.
-                        </AlertDialogBody>
-
-                        <AlertDialogFooter>
-                            <Button ref={cancelRef} onClick={onClose}>
-                                Cancel
-                            </Button>
-                            <Button onClick={
-                                () => {
-                                    deleteFn();
-                                }
-                            } colorScheme='red' ml={3}>
-                                Delete
-                            </Button>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialogOverlay>
-            </AlertDialog>
-        </>
     )
 }
 

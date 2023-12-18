@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const MediSchema = new Schema({
-    _id: ObjectId,
+    
     mediID: {
         type: String,
         required: true,

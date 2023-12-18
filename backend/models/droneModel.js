@@ -3,6 +3,23 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
+const logSchema = new Schema({
+    event: {
+        type: String,
+        // required: true,
+    },
+    description: {
+        type: String,
+        maxlength: 100,
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
+    },
+
+});
+
+
 const DroneSchema = new Schema({
     id: ObjectId,
     uuid: {
@@ -29,7 +46,7 @@ const DroneSchema = new Schema({
         enum: ['idle', 'loading', 'loaded', 'delivering', 'delivered', 'returning', 'charging'],
         default: 'idle'
     },
-    battery : {
+    battery: {
         type: Number,
         min: 0,
         max: 100,
@@ -38,10 +55,12 @@ const DroneSchema = new Schema({
     isDeleted: {
         type: Boolean,
         default: false,
-        required : true
+        required: true
     },
+    logs: [logSchema],
 });
 
+// export both the schemas 
 const Drones = mongoose.model("drones", DroneSchema);
-
-export default Drones;
+const Logs = mongoose.model("logs", logSchema);
+export { Drones, Logs };

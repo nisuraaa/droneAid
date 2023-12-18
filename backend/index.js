@@ -8,6 +8,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import mediRoutes from './routes/medicine.js'
 import droneRoutes from './routes/drone.js';
+import nodeCron from 'node-cron';
+
+import { generateLog } from './routes/drone.js';
 
 dotenv.config();
 
@@ -19,6 +22,13 @@ app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/drone', droneRoutes);
 app.use('/medi', mediRoutes);
+
+function logMessage() {
+    console.log('Cron job executed');
+    generateLog('all', 'CRON_EVENT', '');
+}
+
+nodeCron.schedule('*/60 * * * *', logMessage);
 
 mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connected")).catch((error) => console.log(error));
 
