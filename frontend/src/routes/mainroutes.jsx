@@ -1,7 +1,7 @@
 import {
     createBrowserRouter,
 } from "react-router-dom";
-
+    import { Navigate } from "react-router-dom";
 import { PrivateRoute } from "../components/auth/PrivateRoute.jsx";
 import Landing from '../pages/Landing.jsx'
 import Login from '../pages/Login.jsx'
@@ -13,19 +13,12 @@ import PanelLayout from "../pages/PanelLayout.jsx";
 
 const adminRoutes = [
     {
-        path: "/admin/overview",
-        label: "Overview"
-    },
-    {
         path: "/admin/fleet",
         label: "My Fleet"
     }
 ]
 const pharmaRoutes = [
-    {
-        path: "/pharma/overview",
-        label: "Overview"
-    },
+
     {
         path: "/pharma/create",
         label: "Create Orders"
@@ -50,12 +43,12 @@ const router = createBrowserRouter([
         </PrivateRoute>,
         children: [
             {
-                path: "fleet",
-                element: <Overview />,
+                path: '',
+                element: <Navigate to="/admin/fleet" replace />,
             },
             {
-                path: "overview",
-                // element: <Overview />,
+                path: "fleet",
+                element: <Overview />,
             },
         ],
     },
@@ -70,12 +63,12 @@ const router = createBrowserRouter([
                 element: <PharmaOverview />,
             },
             {
-                path: "overview",
-                // element: <Overview />,
+                path: '',
+                element: <Navigate to="/pharma/create" replace />,
             },
         ],
     },
-    
+
 ]);
 
 export default router;
