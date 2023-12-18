@@ -1,7 +1,8 @@
 import express, { query } from 'express';
 const router = express.Router();
 
-import Drones from '../models/droneModel.js';
+import { Drones } from '../models/droneModel.js';
+import { Logs } from '../models/droneModel.js';
 import DroneModels from '../models/TypeModel.js';
 
 const generateRandomSerial = () => {
@@ -9,12 +10,41 @@ const generateRandomSerial = () => {
     return serial;
 }
 
+export const generateLog = async (droneUUID, event_name, description) => {
+    if (droneUUID === 'all') {
+        const drones = await Drones.find({ isDeleted: false });
+        drones.forEach(async (drone) => {
+            const log = new Logs({
+                event: event_name,
+                description: "Battery Level is " + drone.battery + "%",
+            });
+            await Drones.findOneAndUpdate({ uuid: drone.uuid }, { $push: { logs: log } });
+        });
+        return;
+    } else {
+        const log = new Logs({
+            event: event_name,
+            description: description,
+        });
+    }
+
+
+    await Drones.findOneAndUpdate({ uuid: droneUUID }, { $push: { logs: log } });
+};
+
 export const changeStatus = async (droneUUID, status) => {
 
     const drone = await Drones.findOne({ uuid: droneUUID });
-    console.log(drone);
+
+
+    let event_name = 'STATUS_CHANGE_EVENT';
+
     if (drone) {
+        let prevStatus = drone.status;
         if (status === 'idle') {
+            if (drone.status === 'charging') {
+                event_name = 'CHARGE_REMOVE_EVENT';
+            }
             drone.status = 'idle';
         } else if (status === 'loading') {
             if (drone.status === 'idle' || drone.status === 'loaded') {
@@ -45,12 +75,16 @@ export const changeStatus = async (droneUUID, status) => {
         } else if (status === 'charging') {
             if (drone.status === 'idle') {
                 drone.status = 'charging';
+                event_name = 'CHARGE_EVENT';
             } else {
                 return { message: 'Invalid status', status: 'error' };
             }
         } else {
             return { message: 'Invalid status', status: 'error' };
         }
+
+        generateLog(drone.uuid, event_name, `Status changed from ${prevStatus} to ${drone.status}`);
+
         await drone.save();
         return { message: 'Status changed successfully', status: 'success' };
     } else {
