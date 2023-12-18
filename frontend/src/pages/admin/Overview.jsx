@@ -14,6 +14,7 @@ import {
     AlertDialog,
     Spinner,
     AlertDialogBody,
+    IconButton,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogContent,
@@ -38,6 +39,7 @@ import {
     TableContainer,
 } from '@chakra-ui/react'
 import './animation.css'
+import { MdRefresh } from "react-icons/md";
 
 import DroneImg from '../../assets/uav-quadcopter.svg'
 
@@ -310,7 +312,7 @@ const Overview = () => {
 
                                             <Flex gap={'10px'}>
 
-                                                <Button colorScheme={'blue'} mt={'auto'}>View Logs</Button>
+                                                <LogModal uuid={droneData?.uuid} />
                                                 <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
                                             </Flex>
                                         </Flex>
@@ -340,7 +342,7 @@ const Overview = () => {
                                                                 }
                                                             </Text>
                                                             <Text>
-                                                                2 Hours Ago
+                                                                
                                                             </Text>
                                                         </Flex>
                                                     </Flex>
@@ -581,6 +583,96 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
                     </AlertDialogContent>
                 </AlertDialogOverlay>
             </AlertDialog>
+        </>
+    )
+}
+
+function LogModal(
+    {
+        uuid
+    }
+) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    useEffect(() => {
+        if (isOpen) {
+            getLogs(uuid);
+        }
+    }, [isOpen]);
+    const getAccessToken = useAuthContext()
+    const [logs, setLogs] = useState([]);
+
+    const getLogs = async (uuid) => {
+        try {
+            // const accessToken = await getAccessToken();
+            const response = await fetch(window.config.choreoApiUrl + '/drone/logs/' + uuid, {
+                method: 'GET',
+                headers: {
+                    // 'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    setLogs(data);
+
+                })
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+
+    return (
+        <>
+            <Button onClick={onOpen}>View Log</Button>
+
+            <Modal isOpen={isOpen} onClose={onClose} variant={'reviewModal'} height='400px'>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader display={'flex'} alignItems={'center'} gap={'10px'}><Text>
+                        Drone Logs
+                    </Text>
+                        <IconButton icon={<MdRefresh />} onClick={
+                            () => {
+                                getLogs(uuid)
+                            }
+                        }
+                        />
+                    </ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Box overflow={'auto'} maxHeight={'60vh'}>
+
+                            <Table variant="simple">
+                                <Thead position={'sticky'} top={0} zIndex={99} backgroundColor={'white'}>
+                                    <Tr>
+                                        <Th>Time</Th>
+                                        <Th>Event</Th>
+                                        <Th>Description</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    {logs?.map((log) => (
+                                        <Tr key={log?.id}>
+                                            <Td>{log?.timestamp.split('T')[0] + ' ' + log?.timestamp.split('T')[1].split('.')[0]}</Td>
+                                            <Td>{log?.event}</Td>
+                                            <Td>{log?.description}</Td>
+                                        </Tr>
+                                    )
+                                    )}
+                                </Tbody>
+
+                            </Table>
+                        </Box>
+
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Text><b>{logs.length}</b> Entries Recorded</Text>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </>
     )
 }

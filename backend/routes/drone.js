@@ -18,7 +18,8 @@ export const generateLog = async (droneUUID, event_name, description) => {
                 event: event_name,
                 description: "Battery Level is " + drone.battery + "%",
             });
-            await Drones.findOneAndUpdate({ uuid: drone.uuid }, { $push: { logs: log } });
+            // push to first position of array
+            await Drones.findOneAndUpdate({ uuid: drone.uuid }, { $push: { logs: { $each: [log], $position: 0 } } });
         });
         return;
     } else {
@@ -26,10 +27,12 @@ export const generateLog = async (droneUUID, event_name, description) => {
             event: event_name,
             description: description,
         });
+        await Drones.findOneAndUpdate({ uuid: droneUUID }, { $push: { logs: { $each: [log], $position: 0 } } });
+
+        return;
     }
 
 
-    await Drones.findOneAndUpdate({ uuid: droneUUID }, { $push: { logs: log } });
 };
 
 export const changeStatus = async (droneUUID, status) => {
@@ -174,6 +177,14 @@ router.patch('/drones/:id', async (req, res) => {
     console.log(drone);
     // if (!drone) res.status(404).send('Drone not found');
     res.send('Drone deleted');
+});
+
+router.get('/logs/:id', async (req, res) => {
+
+    const drone = await Drones.findOne({ uuid: req.params.id });
+
+    // console.log(drone);
+    res.json(drone.logs);
 });
 
 

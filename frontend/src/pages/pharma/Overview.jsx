@@ -616,7 +616,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
     const toast = useToast()
     const { getAccessToken } = useAuthContext();
     const deleteFn = async () => {
-        const [accessToken] = await getAccessToken();
+        const accessToken = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/drones/' + uuid, {
             method: 'PATCH',
             headers: {
