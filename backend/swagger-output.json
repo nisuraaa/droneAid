@@ -51,6 +51,13 @@
     "/drone/recommend": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "weight",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -132,6 +139,24 @@
         }
       }
     },
+    "/drone/logs/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/medi/all": {
       "get": {
         "description": "",
@@ -152,25 +177,16 @@
             "schema": {
               "type": "object",
               "properties": {
-                "address": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "weight": {
-                  "example": "any"
-                },
                 "droneUUID": {
                   "example": "any"
                 },
-                "phone": {
+                "items": {
                   "example": "any"
                 },
-                "firstname": {
+                "customer": {
                   "example": "any"
                 },
-                "lastname": {
+                "weight": {
                   "example": "any"
                 }
               }
@@ -180,6 +196,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

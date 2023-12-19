@@ -127,7 +127,7 @@ const Overview = () => {
             .then((data) => {
                 console.log(data);
                 if (data.status == 'success') {
-                   toast({
+                    toast({
                         title: "Order Placed",
                         description: "Your order has been placed successfully",
                         status: "success",
@@ -147,7 +147,7 @@ const Overview = () => {
                     setEmail('');
                     calcWeight();
 
-                    
+
                 } else {
                     alert('Error Occured');
                 }
@@ -173,7 +173,7 @@ const Overview = () => {
     };
 
     const getRecommendedDrones = async (weight) => {
-        const [accessToken] = await getAccessToken();
+        const accessToken = await getAccessToken();
 
         const response = await fetch(window.config.choreoApiUrl + '/drone/recommend?' + new URLSearchParams({ weight: weight }), {
 
@@ -223,6 +223,27 @@ const Overview = () => {
         }
     }
 
+    const LoadDrone = async (droneUUID) => {
+        const [accessToken] = await getAccessToken();
+        const response = await fetch(window.config.choreoApiUrl + '/drone/changestatus', {
+
+            method: 'PUT',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    "droneUUID": droneUUID,
+                    "status": "loading"
+                }
+            )
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+            })
+    }
     return (
         <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'#C9C9C9'} >
 
@@ -444,6 +465,7 @@ const Overview = () => {
                                 </Button>
                                 <Button isDisabled={selectedDrone == null} onClick={() => {
                                     next()
+                                    LoadDrone(selectedDrone.uuid);
                                 }} fontWeight={'medium'}>
                                     Next
                                 </Button>

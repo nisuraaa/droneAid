@@ -47,8 +47,12 @@ export const changeStatus = async (droneUUID, status) => {
         if (status === 'idle') {
             if (drone.status === 'charging') {
                 event_name = 'CHARGE_REMOVE_EVENT';
+                drone.status = 'idle';
+            } else if (drone.status === 'returning') {
+                drone.status = 'idle';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
             }
-            drone.status = 'idle';
         } else if (status === 'loading') {
             if (drone.status === 'idle' || drone.status === 'loaded') {
                 drone.status = 'loading';

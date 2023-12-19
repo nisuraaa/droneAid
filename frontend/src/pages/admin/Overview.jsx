@@ -346,7 +346,7 @@ const Overview = () => {
                                                                 }
                                                             </Text>
                                                             <Text>
-                                                                
+
                                                             </Text>
                                                         </Flex>
                                                     </Flex>
@@ -359,6 +359,7 @@ const Overview = () => {
                                             )
                                             }
                                             <Button mt={'10px'} colorScheme={droneData?.status === 'charging' ? 'yellow' : 'whatsapp'} isLoading={batteryloading}
+                                                isDisabled={droneData?.status === 'idle' ? false : true}
                                                 onClick={
                                                     () => {
                                                         toggleCharge(droneData?.uuid, droneData?.status === 'idle' ? true : false)
@@ -518,6 +519,7 @@ function DroneRegister({ getDrones }) {
 }
 
 function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
+    const { getAccessToken } = useAuthContext()
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef()
     const toast = useToast()
