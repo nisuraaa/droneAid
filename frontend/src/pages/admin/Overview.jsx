@@ -10,6 +10,7 @@ import {
     ModalContent,
     ModalHeader,
     ModalFooter,
+    useMediaQuery,
     useToast,
     AlertDialog,
     Spinner,
@@ -52,6 +53,10 @@ import middlew from '../../assets/dronemodels/middlew.webp'
 
 
 const Overview = () => {
+
+    const [isLargerThan480] = useMediaQuery('(min-width: 480px)')
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
     const { getAccessToken } = useAuthContext();
     // const [droneDataLoading, setDroneDataLoading] = useState(null);
     const [drones, setDrones] = useState([]);
@@ -122,13 +127,15 @@ const Overview = () => {
                 setBatteryLoading(false);
             })
     }
+    const [searchFilter, setSearchFilter] = useState('all');
 
 
-    const getdrones = async () => {
+    const getdrones = async (
+        searchFilter = 'all'
+    ) => {
         setIsAllDronesLoading(true);
         const accessToken = await getAccessToken();
-        console.log(accessToken);
-        const response = await fetch(window.config.choreoApiUrl + '/drone/alldrones', {
+        const response = await fetch(window.config.choreoApiUrl + '/drone/alldrones/' + searchFilter, {
             method: 'GET',
             headers: {
                 'Authorization': 'Bearer ' + accessToken,
@@ -137,7 +144,6 @@ const Overview = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
                 setDrones(data);
                 setIsAllDronesLoading(false);
             })
@@ -146,14 +152,150 @@ const Overview = () => {
     const [selectedTab, setSelectedTab] = useState('1');
 
 
-
     return (
         <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'C9C9C9'} >
+            <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      {isDroneInfoLoading ? (
+                            <Flex flexDir={
+                                'column'
+                            } justifyContent={'center'} alignItems={'center'} height={'100%'} opacity={0.5}>
 
+                                <Image src={droneloader} width={'10%'} className='swing-in-left-bck' margin={'30px'} />
+                                <Text>
+                                    Loading
+                                </Text>
+                            </Flex>
+                        )
+                            : (
+                                <Flex flexDirection={'column'} height={'100%'} >
+                                    <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} p={'20px'} borderBottom={'1px solid #E5E7EB'} >
+                                        <Image src={
+                                            droneData?._model?.modelID === 'LW' ? lightimg : droneData?._model?.modelID === 'MW' ? middlew : droneData?._model?.modelID === 'HW' ? largeimg : cruiserimg
+
+                                        } height={'250px'} width={'300px'} objectFit={'contain'} />
+                                        <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={'10px'}>
+
+                                            <Heading fontWeight={'300px'} ml={'10px'}>{selectedDrone.uid}</Heading>
+                                            <Box>
+                                                <Tag>{droneData?.status.toUpperCase()
+                                                }</Tag>
+                                            </Box>
+                                        </Flex>
+
+                                    </Flex>
+                                    <Flex flexDirection={'row'} flex={1} p={'0.5rem'} mt={'20px'} borderRadius={'10px'} gap={'10px'} >
+
+                                        <Flex flexDirection={'column'} gap={'20px'} backgroundColor={'white'} p={'1rem'} w={'100%'} >
+                                            <Flex flexDirection={'row'} gap={'10px'}>
+                                                <Flex flexDirection={'column'} gap={'10px'} width={'50%'}>
+
+                                                    <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?.serial}
+                                                            </Text>
+                                                        </Flex>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?._model?.name}
+                                                            </Text>
+                                                        </Flex>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?._model?.maxWeight} g
+                                                            </Text>
+                                                        </Flex>
+
+                                                    </Flex>
+
+                                                    <Flex gap={'10px'}>
+
+                                                        <LogModal uuid={droneData?.uuid} />
+                                                        <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
+                                                    </Flex>
+                                                </Flex>
+                                                <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'} w={'50%'} h={'100%'}>
+                                                    {!batteryloading ? (
+                                                        <>
+                                                            <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
+
+                                                                <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+                                                                    <Text>
+                                                                        Battery Level
+                                                                    </Text>
+                                                                    <Text>
+                                                                        Battery Status
+                                                                    </Text>
+                                                                    <Text>
+                                                                        Last Charged
+                                                                    </Text>
+                                                                </Flex>
+                                                                <Flex flexDirection={'column'} gap={'10px'} width={'5   0%'}>
+                                                                    <Text>
+                                                                        {droneData?.battery} %
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {
+                                                                            droneData?.status === 'charging' ? 'Charging' : 'Discharging'
+                                                                        }
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {droneData?.lastCharged.split('T')[0] + ' ' + droneData?.lastCharged.split('T')[1].split('.')[0]}
+                                                                    </Text>
+                                                                </Flex>
+                                                            </Flex>
+                                                        </>
+                                                    ) : (
+                                                        <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
+
+                                                            <Spinner />
+                                                        </Flex>
+                                                    )
+                                                    }
+                                                    <Button mt={'10px'} colorScheme={droneData?.status === 'charging' ? 'yellow' : 'whatsapp'} isLoading={batteryloading}
+                                                        isDisabled={droneData?.status === 'idle' || droneData?.status === 'charging' ? false : true}
+                                                        onClick={
+                                                            () => {
+                                                                toggleCharge(droneData?.uuid, droneData?.status === 'idle' ? true : false)
+                                                            }
+                                                        }
+                                                    >
+                                                        {
+                                                            droneData?.status === 'charging' ? 'Stop Charging' : 'Start Charging'
+                                                        }
+                                                    </Button>
+                                                    <Text fontSize={'12px'} color={'grey'}>
+                                                        Charge mode can only be enabled when drone is idle
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                                )}
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme='blue' mr={3} onClick={onClose}>
+                            Close
+                        </Button>
+                        <Button variant='ghost'>Secondary Action</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
             {/* <Grid height={'100%'} templateColumns="repeat(6, 1fr)" w={'100%'} gap={6} > */}
 
             <Flex overflowY={'auto'} maxHeight={'90vh'} backgroundColor={'white'} borderRadius={'10px'} borderTopRightRadius={'0px'} borderBottomRightRadius={'0px'}
-                display={'flex'} flexDirection={'column'} height={'100%'} width={'33.33%'}
+                display={'flex'} flexDirection={'column'} height={'100%'} width={isLargerThan480 ? '33.33%' : '100%'}
                 colSpan={2} p={'20px'}
                 borderRight={
                     '1px solid #E5E7EB'
@@ -168,12 +310,20 @@ const Overview = () => {
                     </Flex>
 
                     <Flex gap={'5px'}>
-                        <Input width={'70%'} placeholder="Search" />
-                        <InputGroup width={'30%'}>
+                        <InputGroup width={'100%'}>
 
-                            <Select >
-                                <option value="option1">Status</option>
-                                <option value="option2">UID</option>
+                            <Select width={'100%'} onChange={(e) => {
+                                setSearchFilter(e.target.value);
+                                getdrones(e.target.value);
+                            }}
+                                value={searchFilter}
+                            >
+                                <option value="all">All</option>
+                                <option value="idle">Idle</option>
+                                <option value="charging">Charging</option>
+                                <option value="delivering">Delivering</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="returning">Returning</option>
                             </Select>
                         </InputGroup>
 
@@ -197,6 +347,7 @@ const Overview = () => {
                             <Card cursor={'pointer'} onClick={() => {
                                 setSelectedDrone(drone)
                                 getDroneDetails(drone.uuid);
+                                onOpen();
                             }} key={drone.id} p={'10px'} borderRadius={'10px'} backgroundColor={selectedDrone?.uuid === drone.uuid ? 'white' : '#F3F4F6'} border={selectedDrone?.uuid === drone?.uuid ? '1px solid #006FF2' : '1px solid #F3F4F6'} >
                                 <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} p={'5px'}>
                                     <Text>{drone?.name}</Text>
@@ -246,141 +397,144 @@ const Overview = () => {
 
                 </Flex>
             </Flex>
+            {
+                isLargerThan480 && (
 
-            <GridItem flex={1} colSpan={4} height={'100%'} justifyContent={'center'} borderRadius={'10px'} alignItems={'center'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
-                {!selectedDrone ? (
-                    <Flex flexDir={
-                        'column'
-                    } justifyContent={'center'} alignItems={'center'} height={'100%'} >
+                    <GridItem flex={1} colSpan={4} height={'100%'} justifyContent={'center'} borderRadius={'10px'} alignItems={'center'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} >
+                        {!selectedDrone ? (
+                            <Flex flexDir={
+                                'column'
+                            } justifyContent={'center'} alignItems={'center'} height={'100%'} >
 
-                        <Image src={DroneImg} width={'50%'} opacity={0.1} />
-                        <Text>
-                            Select a drone from the list to view its details
-                        </Text>
-                    </Flex>
-                ) : isDroneInfoLoading ? (
-                    <Flex flexDir={
-                        'column'
-                    } justifyContent={'center'} alignItems={'center'} height={'100%'} opacity={0.5}>
-
-                        <Image src={droneloader} width={'10%'} className='swing-in-left-bck' margin={'30px'} />
-                        <Text>
-                            Loading
-                        </Text>
-                    </Flex>
-                )
-                    : (
-                        <Flex flexDirection={'column'} height={'100%'} >
-                            <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} p={'20px'} borderBottom={'1px solid #E5E7EB'} >
-                                <Image src={
-                                    droneData?._model?.modelID === 'LW' ? lightimg : droneData?._model?.modelID === 'MW' ? middlew : droneData?._model?.modelID === 'HW' ? largeimg : cruiserimg
-
-                                } height={'250px'} width={'300px'} objectFit={'contain'} />
-                                <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={'10px'}>
-
-                                    <Heading fontWeight={'300px'} ml={'10px'}>{selectedDrone.uid}</Heading>
-                                    <Box>
-                                        <Tag>{droneData?.status.toUpperCase()
-                                        }</Tag>
-                                    </Box>
-                                </Flex>
-
+                                <Image src={DroneImg} width={'50%'} opacity={0.1} />
+                                <Text>
+                                    Select a drone from the list to view its details
+                                </Text>
                             </Flex>
-                            <Flex flexDirection={'row'} flex={1} p={'0.5rem'} mt={'20px'} borderRadius={'10px'} gap={'10px'} >
+                        ) : isDroneInfoLoading ? (
+                            <Flex flexDir={
+                                'column'
+                            } justifyContent={'center'} alignItems={'center'} height={'100%'} opacity={0.5}>
 
-                                <Flex flexDirection={'column'} gap={'20px'} backgroundColor={'white'} p={'1rem'} w={'100%'} >
-                                    <Flex flexDirection={'row'} gap={'10px'}>
-                                        <Flex flexDirection={'column'} gap={'10px'} width={'50%'}>
+                                <Image src={droneloader} width={'10%'} className='swing-in-left-bck' margin={'30px'} />
+                                <Text>
+                                    Loading
+                                </Text>
+                            </Flex>
+                        )
+                            : (
+                                <Flex flexDirection={'column'} height={'100%'} >
+                                    <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} p={'20px'} borderBottom={'1px solid #E5E7EB'} >
+                                        <Image src={
+                                            droneData?._model?.modelID === 'LW' ? lightimg : droneData?._model?.modelID === 'MW' ? middlew : droneData?._model?.modelID === 'HW' ? largeimg : cruiserimg
 
-                                            <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
-                                                <Flex flexDirection={'column'} gap={'0px'}>
-                                                    <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
-                                                    <Text ml={'10px'}>
-                                                        {droneData?.serial}
-                                                    </Text>
-                                                </Flex>
-                                                <Flex flexDirection={'column'} gap={'0px'}>
-                                                    <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
-                                                    <Text ml={'10px'}>
-                                                        {droneData?._model?.name}
-                                                    </Text>
-                                                </Flex>
-                                                <Flex flexDirection={'column'} gap={'0px'}>
-                                                    <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
-                                                    <Text ml={'10px'}>
-                                                        {droneData?._model?.maxWeight} g
-                                                    </Text>
-                                                </Flex>
+                                        } height={'250px'} width={'300px'} objectFit={'contain'} />
+                                        <Flex flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={'10px'}>
 
-                                            </Flex>
-
-                                            <Flex gap={'10px'}>
-
-                                                <LogModal uuid={droneData?.uuid} />
-                                                <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
-                                            </Flex>
+                                            <Heading fontWeight={'300px'} ml={'10px'}>{selectedDrone.uid}</Heading>
+                                            <Box>
+                                                <Tag>{droneData?.status.toUpperCase()
+                                                }</Tag>
+                                            </Box>
                                         </Flex>
-                                        <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'} w={'50%'} h={'100%'}>
-                                            {!batteryloading ? (
-                                                <>
-                                                    <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
 
-                                                        <Flex flexDirection={'column'} width={'70%'} gap={'10px'}>
-                                                            <Text>
-                                                                Battery Level
-                                                            </Text>
-                                                            <Text>
-                                                                Battery Status
-                                                            </Text>
-                                                            <Text>
-                                                                Last Charged
+                                    </Flex>
+                                    <Flex flexDirection={'row'} flex={1} p={'0.5rem'} mt={'20px'} borderRadius={'10px'} gap={'10px'} >
+
+                                        <Flex flexDirection={'column'} gap={'20px'} backgroundColor={'white'} p={'1rem'} w={'100%'} >
+                                            <Flex flexDirection={'row'} gap={'10px'}>
+                                                <Flex flexDirection={'column'} gap={'10px'} width={'50%'}>
+
+                                                    <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?.serial}
                                                             </Text>
                                                         </Flex>
-                                                        <Flex flexDirection={'column'} gap={'10px'} width={'30%'}>
-                                                            <Text>
-                                                                {droneData?.battery} %
-                                                            </Text>
-                                                            <Text>
-                                                                {
-                                                                    droneData?.status === 'charging' ? 'Charging' : 'Discharging'
-                                                                }
-                                                            </Text>
-                                                            <Text>
-
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?._model?.name}
                                                             </Text>
                                                         </Flex>
+                                                        <Flex flexDirection={'column'} gap={'0px'}>
+                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
+                                                            <Text ml={'10px'}>
+                                                                {droneData?._model?.maxWeight} g
+                                                            </Text>
+                                                        </Flex>
+
                                                     </Flex>
-                                                </>
-                                            ) : (
-                                                <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
 
-                                                    <Spinner />
+                                                    <Flex gap={'10px'}>
+
+                                                        <LogModal uuid={droneData?.uuid} />
+                                                        <DeleteDialog setSelectedDrone={setSelectedDrone} getdrones={getdrones} uuid={droneData?.uuid} setDroneData={setDroneData} />
+                                                    </Flex>
                                                 </Flex>
-                                            )
-                                            }
-                                            <Button mt={'10px'} colorScheme={droneData?.status === 'charging' ? 'yellow' : 'whatsapp'} isLoading={batteryloading}
-                                                isDisabled={droneData?.status === 'idle' ? false : true}
-                                                onClick={
-                                                    () => {
-                                                        toggleCharge(droneData?.uuid, droneData?.status === 'idle' ? true : false)
+                                                <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'} w={'50%'} h={'100%'}>
+                                                    {!batteryloading ? (
+                                                        <>
+                                                            <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'}>
+
+                                                                <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+                                                                    <Text>
+                                                                        Battery Level
+                                                                    </Text>
+                                                                    <Text>
+                                                                        Battery Status
+                                                                    </Text>
+                                                                    <Text>
+                                                                        Last Charged
+                                                                    </Text>
+                                                                </Flex>
+                                                                <Flex flexDirection={'column'} gap={'10px'} width={'5   0%'}>
+                                                                    <Text>
+                                                                        {droneData?.battery} %
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {
+                                                                            droneData?.status === 'charging' ? 'Charging' : 'Discharging'
+                                                                        }
+                                                                    </Text>
+                                                                    <Text>
+                                                                        {droneData?.lastCharged.split('T')[0] + ' ' + droneData?.lastCharged.split('T')[1].split('.')[0]}
+                                                                    </Text>
+                                                                </Flex>
+                                                            </Flex>
+                                                        </>
+                                                    ) : (
+                                                        <Flex flex={1} justifyContent={'center'} alignItems={'center'}>
+
+                                                            <Spinner />
+                                                        </Flex>
+                                                    )
                                                     }
-                                                }
-                                            >
-                                                {
-                                                    droneData?.status === 'charging' ? 'Stop Charging' : 'Start Charging'
-                                                }
-                                            </Button>
-                                            <Text fontSize={'12px'} color={'grey'}>
-                                                Charge mode can only be enabled when drone is idle
-                                            </Text>
+                                                    <Button mt={'10px'} colorScheme={droneData?.status === 'charging' ? 'yellow' : 'whatsapp'} isLoading={batteryloading}
+                                                        isDisabled={droneData?.status === 'idle' || droneData?.status === 'charging' ? false : true}
+                                                        onClick={
+                                                            () => {
+                                                                toggleCharge(droneData?.uuid, droneData?.status === 'idle' ? true : false)
+                                                            }
+                                                        }
+                                                    >
+                                                        {
+                                                            droneData?.status === 'charging' ? 'Stop Charging' : 'Start Charging'
+                                                        }
+                                                    </Button>
+                                                    <Text fontSize={'12px'} color={'grey'}>
+                                                        Charge mode can only be enabled when drone is idle
+                                                    </Text>
+                                                </Flex>
+                                            </Flex>
+
                                         </Flex>
                                     </Flex>
-
                                 </Flex>
-                            </Flex>
-                        </Flex>
-                    )}
-            </GridItem>
+                            )}
+                    </GridItem>
+                )}
             {/* </Grid> */}
         </Card>
 
@@ -537,7 +691,6 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone }) {
                 if (response.status == 200) {
                     toast({
                         title: 'Drone Deleted',
-                        // description: "We've created your account for you.",
                         position: 'bottom-right',
                         status: 'error',
                         duration: 5000,
@@ -682,6 +835,31 @@ function LogModal(
         </>
     )
 }
+function DetailModal() {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    return (
+        <>
+            <Button onClick={onOpen}>Open Modal</Button>
 
+            <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Modal Title</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Lorem count={2} />
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme='blue' mr={3} onClick={onClose}>
+                            Close
+                        </Button>
+                        <Button variant='ghost'>Secondary Action</Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
+    )
+}
 
 export default Overview

@@ -57,6 +57,15 @@ const DroneSchema = new Schema({
         default: false,
         required: true
     },
+    lastCharged: {
+        type: Date,
+        default: "2021-01-01T00:00:00.000Z"
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    
+    },
     logs: [logSchema],
 });
 

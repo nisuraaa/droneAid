@@ -19,7 +19,13 @@ export const generateLog = async (droneUUID, event_name, description) => {
                 description: "Battery Level is " + drone.battery + "%",
             });
             // push to first position of array
-            await Drones.findOneAndUpdate({ uuid: drone.uuid }, { $push: { logs: { $each: [log], $position: 0 } } });
+            await Drones.findOneAndUpdate({ uuid: drone.uuid }, {
+                $push: {
+                    logs: {
+                        $each: [log], $position: 0, $slice: 30
+                    }
+                }
+            });
         });
         return;
     } else {
@@ -27,7 +33,13 @@ export const generateLog = async (droneUUID, event_name, description) => {
             event: event_name,
             description: description,
         });
-        await Drones.findOneAndUpdate({ uuid: droneUUID }, { $push: { logs: { $each: [log], $position: 0 } } });
+        await Drones.findOneAndUpdate({ uuid: droneUUID }, {
+            $push: {
+                logs: {
+                    $each: [log], $position: 0, $slice: 30
+                }
+            }
+        });
 
         return;
     }
@@ -38,7 +50,7 @@ export const generateLog = async (droneUUID, event_name, description) => {
 export const changeStatus = async (droneUUID, status) => {
 
     const drone = await Drones.findOne({ uuid: droneUUID });
-
+    console.log(status);
 
     let event_name = 'STATUS_CHANGE_EVENT';
 
@@ -46,9 +58,10 @@ export const changeStatus = async (droneUUID, status) => {
         let prevStatus = drone.status;
         if (status === 'idle') {
             if (drone.status === 'charging') {
+                drone.lastCharged = Date.now();
                 event_name = 'CHARGE_REMOVE_EVENT';
                 drone.status = 'idle';
-            } else if (drone.status === 'returning') {
+            } else if (drone.status === 'returning' || drone.status === 'loading' || drone.status === 'loaded') {
                 drone.status = 'idle';
             } else {
                 return { message: 'Invalid status', status: 'error' };
@@ -106,13 +119,20 @@ router.put('/changestatus', async (req, res) => {
     res.status(200).json(resp);
 });
 
-router.get('/alldrones', async (req, res) => {
-
-    const drones = await Drones.find({ isDeleted: false }).populate('_model');
-
-    console.log(drones);
-    res.status(200).json(drones);
-});
+router.get('/alldrones/:filter', async (req, res) => {
+    const filter = req.params.filter;
+    console.log(filter);
+    if (filter === 'all') {
+        const drones = await Drones.find({ isDeleted: false }).populate('_model');
+        console.log(drones);
+        res.status(200).json(drones);
+    } else {
+        const drones = await Drones.find({ isDeleted: false, status: filter }).populate('_model');
+        console.log(drones);
+        res.status(200).json(drones);
+    }
+}
+);
 
 router.get('/recommend', async (req, res) => {
 

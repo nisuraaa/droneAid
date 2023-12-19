@@ -65,8 +65,8 @@ const Topbar = ({ routes }) => {
                                 }>{route.label}</NavLink>
                             )
                         })}
-                    
-                    
+
+
 
 
                         {/* <NavLink to="/admin/overview" className={({ isActive, isPending }) =>
@@ -90,8 +90,6 @@ const Topbar = ({ routes }) => {
                         <MenuButton as={Avatar} src={'https://picsum.photos/100/200'} borderRadius={'10px'} p={'5px'} />
 
                         <MenuList color={'black'}>
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
                             <MenuItem onClick={() => {
                                 signOut();
                             }}>Sign Out</MenuItem>

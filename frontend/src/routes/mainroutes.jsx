@@ -9,7 +9,7 @@ import Overview from '../pages/admin/Overview.jsx'
 import PharmaOverview from '../pages/pharma/Overview.jsx'
 
 import PanelLayout from "../pages/PanelLayout.jsx";
-
+import OrderHistory from "../pages/pharma/OrderHistory.jsx";
 
 const adminRoutes = [
     {
@@ -22,6 +22,10 @@ const pharmaRoutes = [
     {
         path: "/pharma/create",
         label: "Create Orders"
+    },
+    {
+        path: "/pharma/order-history",
+        label: "Order History"
     }
 ]
 
@@ -61,6 +65,10 @@ const router = createBrowserRouter([
             {
                 path: "create",
                 element: <PharmaOverview />,
+            },
+            {
+                path: "order-history",
+                element: <OrderHistory />,
             },
             {
                 path: '',

@@ -23,24 +23,7 @@ import Topbar from '../components/Topbar';
 const PanelLayout = ({routes}) => {
 
 
-    const tabs = [
-        {
-            id: 1,
-            name: 'Information'
-        },
-        {
-            id: 2,
-            name: 'Battery'
-        },
-        {
-            id: 3,
-            name: 'History'
-        },
-        {
-            id: 4,
-            name: 'Settings'
-        }
-    ]
+   
     const [userInfo, setUserInfo] = useState(null);
     const { state, getBasicUserInfo, signOut } = useAuthContext();
    

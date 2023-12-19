@@ -223,7 +223,7 @@ const Overview = () => {
         }
     }
 
-    const LoadDrone = async (droneUUID) => {
+    const LoadUnloadDrone = async (droneUUID, status) => {
         const [accessToken] = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/changestatus', {
 
@@ -235,13 +235,19 @@ const Overview = () => {
             body: JSON.stringify(
                 {
                     "droneUUID": droneUUID,
-                    "status": "loading"
+                    "status": status
                 }
             )
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                if (data.status == 'success') {
+                    if (status == 'idle') {
+                        prev();
+                    } else {
+                        next();
+                    }
+                }
             })
     }
     return (
@@ -464,8 +470,7 @@ const Overview = () => {
                                     Previous
                                 </Button>
                                 <Button isDisabled={selectedDrone == null} onClick={() => {
-                                    next()
-                                    LoadDrone(selectedDrone.uuid);
+                                    LoadUnloadDrone(selectedDrone.uuid, 'loading');
                                 }} fontWeight={'medium'}>
                                     Next
                                 </Button>
@@ -528,7 +533,7 @@ const Overview = () => {
                             <Flex position={'relative'} bottom={0} gap={'10px'}>
 
                                 <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                    prev()
+                                    LoadUnloadDrone(selectedDrone.uuid, 'idle');
                                 }} fontWeight={'medium'}>
                                     Previous
                                 </Button>

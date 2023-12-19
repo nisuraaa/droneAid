@@ -26,7 +26,7 @@ router.post('/createorder', async (req, res) => {
     const { droneUUID, items, customer, weight } = req.body;
 
     console.log(req.body);
-    try{
+    try {
 
         const order = new MediOrder({
             orderID: generateRandomSerial(),
@@ -52,8 +52,13 @@ router.post('/createorder', async (req, res) => {
 });
 
 router.get('/allorders', async (req, res) => {
-    const allOrders = await MediOrder.find();
+    const allOrders = await MediOrder.find().sort({ date: -1 });
     res.json(allOrders);
+});
+
+router.get('/order/info/:id', async (req, res) => {
+    const order = await MediOrder.find({ orderID: req.params.id });
+    res.json(order[0]);
 });
 
 export default router

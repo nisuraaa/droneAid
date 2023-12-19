@@ -58,6 +58,10 @@ const OrderSchema = new Schema({
         type: String,
         required: true,
     },
+    date: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
 const MediOrder = mongoose.model("MediOrder", OrderSchema);
