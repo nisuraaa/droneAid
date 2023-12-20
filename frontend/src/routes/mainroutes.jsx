@@ -1,13 +1,13 @@
 import {
     createBrowserRouter,
 } from "react-router-dom";
-    import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { PrivateRoute } from "../components/auth/PrivateRoute.jsx";
 import Landing from '../pages/Landing.jsx'
 import Login from '../pages/Login.jsx'
 import Overview from '../pages/admin/Overview.jsx'
 import PharmaOverview from '../pages/pharma/Overview.jsx'
-
+import DroneConsole from '../pages/drone/Console.jsx'
 import PanelLayout from "../pages/PanelLayout.jsx";
 import OrderHistory from "../pages/pharma/OrderHistory.jsx";
 
@@ -75,6 +75,12 @@ const router = createBrowserRouter([
                 element: <Navigate to="/pharma/create" replace />,
             },
         ],
+    },
+    {
+        path: "/drone",
+        element: <PrivateRoute allowedRoles={["drones"]}>
+            <DroneConsole />
+        </PrivateRoute>,
     },
 
 ]);

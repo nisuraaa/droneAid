@@ -4,6 +4,7 @@ const router = express.Router();
 import { Drones } from '../models/droneModel.js';
 import { Logs } from '../models/droneModel.js';
 import DroneModels from '../models/TypeModel.js';
+import MediOrder from '../models/mediOrderModel.js';
 
 const generateRandomSerial = () => {
     const serial = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
@@ -51,6 +52,7 @@ export const changeStatus = async (droneUUID, status) => {
 
     const drone = await Drones.findOne({ uuid: droneUUID });
     console.log(status);
+    console.log(drone.status);
 
     let event_name = 'STATUS_CHANGE_EVENT';
 
@@ -67,7 +69,7 @@ export const changeStatus = async (droneUUID, status) => {
                 return { message: 'Invalid status', status: 'error' };
             }
         } else if (status === 'loading') {
-            if (drone.status === 'idle' || drone.status === 'loaded') {
+            if (((drone.status === 'idle') && (drone.battery >= 25)) || drone.status === 'loaded') {
                 drone.status = 'loading';
             } else {
                 return { message: 'Invalid status', status: 'error' };
@@ -81,6 +83,10 @@ export const changeStatus = async (droneUUID, status) => {
         } else if (status === 'delivered') {
             if (drone.status === 'delivering') {
                 drone.status = 'delivered';
+                const order = await MediOrder.findOne({ droneUUID: droneUUID });
+                order.status = 'delivered';
+                await order.save();
+
             } else {
                 return { message: 'Invalid status', status: 'error' };
             }
@@ -88,10 +94,12 @@ export const changeStatus = async (droneUUID, status) => {
         } else if (status === 'returning') {
             if (drone.status === 'delivered') {
                 drone.status = 'returning';
-            } else {
+                console.log('test');
+
+            } 
+            else {
                 return { message: 'Invalid status', status: 'error' };
             }
-
         } else if (status === 'charging') {
             if (drone.status === 'idle') {
                 drone.status = 'charging';
@@ -115,7 +123,7 @@ export const changeStatus = async (droneUUID, status) => {
 router.put('/changestatus', async (req, res) => {
     const { droneUUID, status } = req.body;
     const resp = await changeStatus(droneUUID, status);
-    console.log(resp);
+    // console.log(resp);
     res.status(200).json(resp);
 });
 
@@ -124,11 +132,11 @@ router.get('/alldrones/:filter', async (req, res) => {
     console.log(filter);
     if (filter === 'all') {
         const drones = await Drones.find({ isDeleted: false }).populate('_model');
-        console.log(drones);
+        // console.log(drones);
         res.status(200).json(drones);
     } else {
         const drones = await Drones.find({ isDeleted: false, status: filter }).populate('_model');
-        console.log(drones);
+        // console.log(drones);
         res.status(200).json(drones);
     }
 }
@@ -162,6 +170,8 @@ router.get('/drones/:id', async (req, res) => {
     console.log(drone);
     res.json(drone[0]);
 });
+
+
 
 router.get('/models', async (req, res) => {
     const models = await DroneModels.find();

@@ -22,12 +22,13 @@ router.get('/all', async (req, res) => {
 
 
 router.post('/createorder', async (req, res) => {
-
     const { droneUUID, items, customer, weight } = req.body;
-
-    console.log(req.body);
     try {
-
+        const isDroneUsed = await MediOrder.findOne({ droneuuid: droneUUID, status : 'delivering' });
+        console.log(isDroneUsed);
+        if (isDroneUsed) {
+            return res.status(400).json({ message: 'Drone is already in use', status: 'error' });
+        }
         const order = new MediOrder({
             orderID: generateRandomSerial(),
             firstname: customer.firstname,

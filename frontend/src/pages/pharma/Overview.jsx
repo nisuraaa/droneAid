@@ -14,7 +14,24 @@ import {
     useToast,
     AlertDialog,
     AlertDialogBody,
+    Drawer,
+    DrawerBody,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerOverlay,
+    DrawerContent,
+    DrawerCloseButton,
+    Popover,
+    PopoverTrigger,
+    PopoverContent,
+    PopoverHeader,
+    PopoverBody,
+    PopoverFooter,
+    PopoverArrow,
+    PopoverCloseButton,
+    PopoverAnchor,
     AlertDialogFooter,
+    useMediaQuery,
     AlertDialogHeader,
     AlertDialogContent,
     CardHeader,
@@ -56,6 +73,7 @@ import DroneImg from '../../assets/uav-quadcopter.svg'
 
 
 const Overview = () => {
+    const [isLargerThan480] = useMediaQuery("(min-width: 480px)")
     const steps = [
         { title: 'Select Medicinal Items', description: 'Select Medicinal Items' },
         { title: 'Select a drone ', description: 'Select the appropraite drone' },
@@ -96,7 +114,6 @@ const Overview = () => {
     const [city, setCity] = useState('');
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
-    const toast = useToast();
     const submitOrder = async () => {
         const [accessToken] = await getAccessToken();
 
@@ -171,6 +188,11 @@ const Overview = () => {
                 setMedicine(data);
             })
     };
+    const {
+        isOpen: isOpenDrawer,
+        onOpen: onOpenDrawer,
+        onClose: onCloseDrawer
+    } = useDisclosure();
 
     const getRecommendedDrones = async (weight) => {
         const accessToken = await getAccessToken();
@@ -250,46 +272,57 @@ const Overview = () => {
                 }
             })
     }
+    const toast = useToast();
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [selectedMedicine, setSelectedMedicine] = useState(null);
+    const btnRef = React.useRef()
+    const [placement, setPlacement] = React.useState('top')
+
     return (
-        <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'} border={'1px solid #C9C9C9'} backgroundColor={'#C9C9C9'} >
+        <Card flexDirection={'row'} w={'99%'} height={'97%'} variant={'solid'} borderRadius={'10px'}  backgroundColor={'#C9C9C9'} >
 
             {/* <Grid height={'100%'} templateColumns="repeat(6, 1fr)" w={'100%'} gap={6} > */}
-            <Flex
-                borderBottomLeftRadius={'0px'} borderTopLeftRadius={'0px'}
+            {
+                isLargerThan480 ? (
+                    <Flex
+                        borderBottomLeftRadius={'0px'} borderTopLeftRadius={'0px'}
 
-                backgroundColor={'white'}
-                borderRight={'1px solid #E5E7EB'}
-                display={'flex'} flexDirection={'column'} height={'100%'} width={'20%'}
-                colSpan={2} p={'20px'}
-                alignContent={'center'}
-                justifyContent={'center'}
-            >
-                <Stepper index={activeStep} orientation='vertical' height='400px' gap='0'>
-                    {steps.map((step, index) => (
-                        <Step key={index}>
-                            <StepIndicator>
-                                <StepStatus
-                                    complete={<StepIcon />}
-                                    incomplete={<StepNumber />}
-                                    active={<StepNumber />}
-                                />
-                            </StepIndicator>
+                        backgroundColor={'white'}
+                        borderRight={'1px solid #E5E7EB'}
+                        display={'flex'} flexDirection={'column'} height={'100%'} width={'20%'}
+                        colSpan={2} p={'20px'}
+                        alignContent={'center'}
+                        justifyContent={'center'}
+                    >
+                        <Stepper index={activeStep} orientation='vertical' height='400px' gap='0'>
+                            {steps.map((step, index) => (
+                                <Step key={index}>
+                                    <StepIndicator>
+                                        <StepStatus
+                                            complete={<StepIcon />}
+                                            incomplete={<StepNumber />}
+                                            active={<StepNumber />}
+                                        />
+                                    </StepIndicator>
 
-                            <Box flexShrink='0'>
-                                <StepTitle>{step.title}</StepTitle>
-                                <StepDescription>{step.description}</StepDescription>
-                            </Box>
+                                    <Box flexShrink='0'>
+                                        <StepTitle>{step.title}</StepTitle>
+                                        <StepDescription>{step.description}</StepDescription>
+                                    </Box>
 
-                            <StepSeparator />
-                        </Step>
-                    ))}
-                </Stepper>
+                                    <StepSeparator />
+                                </Step>
+                            ))}
+                        </Stepper>
 
-            </Flex>
+                    </Flex>
+                ) : null
+            }
+
             {pageNo == 1 ? (
                 <>
                     <Flex overflowY={'auto'} maxHeight={'90vh'} backgroundColor={'white'}
-                        display={'flex'} flexDirection={'column'} height={'100%'} width={'40%'}
+                        display={'flex'} flexDirection={'column'} height={'100%'} width={isLargerThan480 ? '40%' : '100%'}
                         colSpan={2} p={'20px'}
                         borderRight={
                             '1px solid #E5E7EB'
@@ -300,6 +333,89 @@ const Overview = () => {
                                 <Heading >
                                     <Text fontSize={'18px'}>Medicine</Text>
                                 </Heading>
+                                {
+                                    !isLargerThan480 && (
+                                        <>
+                                            <Button onClick={onOpenDrawer} colorScheme='messenger' fontWeight={'medium'} >
+                                                View Cart
+                                            </Button>
+                                            <Drawer
+                                                isOpen={isOpenDrawer}
+                                                placement='bottom'
+                                                onClose={onCloseDrawer}
+                                                finalFocusRef={btnRef}
+                                            >
+                                                <DrawerOverlay />
+                                                <DrawerContent>
+                                                    <DrawerCloseButton />
+                                                    <DrawerHeader>Create your account</DrawerHeader>
+
+                                                    <DrawerBody>
+                                                        <Flex gap={'20px'} flexDirection={'column'} overflowY={'auto'} flex={1} width={'100%'} minHeight={'70vh'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'20px'} border={'1px solid #82828245'} >
+
+                                                            {droneCart.length > 0 ? (
+
+                                                                droneCart.map((item) => (
+
+                                                                    <Card>
+                                                                        <CardBody display={'flex'} alignItems={'center'} flexDirection={'row'} justifyContent={'space-between'} gap={'10px'}>
+                                                                            <Flex flexDirection={'row'} gap={'10px'} width={'80%'} alignItems={'center'} justifyContent={'space-between'}>
+                                                                                <Flex flexDirection={'column'}>
+
+                                                                                    <Text fontSize={'18px'} fontWeight={'medium'}>{item.name}</Text>
+                                                                                    <Text fontSize={'14px'} fontWeight={'normal'}>{item.medID}</Text>
+                                                                                </Flex>
+                                                                                <Flex flexDirection={'column'} alignItems={'center'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'5px'} >
+                                                                                    <Text fontSize={'18px'} fontWeight={'medium'}> {item.weight}g</Text>
+                                                                                    <Text fontSize={'14px'} fontWeight={'normal'}>Weight</Text>
+
+                                                                                </Flex>
+                                                                                <Text fontSize={'14px'} fontWeight={''}>Quantity: {item.quantity}</Text>
+                                                                            </Flex>
+                                                                            <IconButton onClick={
+                                                                                () => {
+                                                                                    setDroneCart(droneCart.filter((med) => med.mediID !== item.mediID))
+                                                                                }
+                                                                            }
+                                                                                aria-label='Remove Item' icon={<DeleteIcon />} colorScheme={'red'} />
+                                                                        </CardBody>
+                                                                    </Card>
+                                                                )
+                                                                ))
+                                                                : (
+                                                                    <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                                                                        <Text opacity={'0.5'} fontWeight={'normal'}> No Items have been added to the cart</Text>
+                                                                    </Flex>
+                                                                )
+                                                            }
+                                                        </Flex>
+                                                    </DrawerBody>
+
+                                                    <DrawerFooter>
+                                                        <Button width={'100%'} variant='solid' mr={3} colorScheme='messenger' onClick={() => {
+                                                            onCloseDrawer()
+                                                            next()
+                                                        }} isDisabled={droneCart.length == 0 || totalWeight > 500}>
+                                                            Next
+                                                        </Button>
+                                                    </DrawerFooter>
+                                                </DrawerContent>
+                                            </Drawer>
+                                        </>
+                                    )
+                                }
+
+                                {/* <Popover placement='bottom' closeOnBlur={false}  width={'300px'} >
+                                    <PopoverTrigger>
+                                        <Button>Trigger</Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent >
+                                        <PopoverArrow />
+                                        <PopoverCloseButton />
+                                        <PopoverHeader>Confirmation!</PopoverHeader>
+                                        <PopoverBody>Are you sure you want to have that milkshake?</PopoverBody>
+                                    </PopoverContent>
+                                </Popover> */}
                             </Flex>
 
                             <Flex gap={'5px'}>
@@ -317,48 +433,101 @@ const Overview = () => {
                             </Flex>
                         </Flex>
                         <Flex flexDirection={'column'} gap={'10px'} overflowY={'scroll'}
-                            // Use 'auto' to show scrollbar only when needed
-
-                            // backgroundColor={'#F3F4F6'}
                             height={'100%'}
                             flex={1}
-
-                            // maxHeight={'calc(100vh - 13rem)'}  // Adjust the maxHeight as needed
                             p={'10px'}  // Add padding to the Box
                         >
-                            <Table>
+                            <Modal isOpen={isOpen} onClose={onClose} isCentered>
+                                <ModalOverlay />
+                                <ModalContent>
+                                    <ModalHeader>{
+                                        selectedMedicine?.name
+                                    }</ModalHeader>
+                                    <ModalCloseButton />
+                                    <ModalBody>
+                                        Add to cart?
+                                    </ModalBody>
+
+                                    <ModalFooter>
+                                        <Button colorScheme='blue' mr={3} onClick={() => {
+
+                                            if (droneCart.some(item => item.mediID === selectedMedicine.mediID)) {
+                                                // update quantity
+                                                setDroneCart(droneCart.map(item => item.mediID === selectedMedicine.mediID ? { ...item, quantity: item.quantity + 1 } : item))
+                                                toast({
+                                                    title: "Medicine added to cart",
+                                                    description: "The selected medicine has been added to the cart",
+                                                    status: "success",
+                                                    duration: 4000,
+                                                    isClosable: true,
+                                                    position: 'bottom'
+                                                })
+                                            } else {
+                                                // add med with quantity 1
+                                                setDroneCart([...droneCart, { ...selectedMedicine, quantity: 1 }])
+                                                toast({
+                                                    title: "Medicine added to cart",
+                                                    description: "The selected medicine has been added to the cart",
+                                                    status: "success",
+                                                    duration: 4000,
+                                                    position: 'bottom',
+                                                    isClosable: true,
+                                                })
+                                            }
+                                            calcWeight();
+                                            onClose();
+                                        }}>
+                                            Yes
+                                        </Button>
+                                        <Button variant='ghost' onClick={onClose}>No</Button>
+                                    </ModalFooter>
+                                </ModalContent>
+                            </Modal>
+                            <Table size={'md'} colorScheme="whiteAlpha" width={'90%'} variant="striped">
                                 <Thead>
                                     <Tr>
                                         <Th>Code</Th>
                                         <Th>Name</Th>
                                         <Th>Weight</Th>
-                                        <Th>Add</Th>
+                                        {
+                                            isLargerThan480 && (<Th>Add</Th>)
+                                        }
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-
                                     {
                                         medicine.map((med) => (
-                                            <><Tr>
+                                            <Tr key={med.mediID}
+                                                onClick={
+                                                    isLargerThan480 ? null : () => {
+                                                        setSelectedMedicine(med);
+                                                        onOpen();
+                                                    }}
+                                            >
 
                                                 <Td>{med.mediID}</Td>
                                                 <Td>{med.name}</Td>
                                                 <Td>{med.weight}</Td>
-                                                <Td><IconButton icon={<SmallAddIcon />}
-                                                    onClick={
-                                                        () => {
-                                                            if (droneCart.some(item => item.mediID === med.mediID)) {
-                                                                // update quantity
-                                                                setDroneCart(droneCart.map(item => item.mediID === med.mediID ? { ...item, quantity: item.quantity + 1 } : item))
-                                                            } else {
-                                                                // add med with quantity 1
-                                                                setDroneCart([...droneCart, { ...med, quantity: 1 }])
-                                                            }
+                                                {
+                                                    isLargerThan480 && (
+                                                        <Td><IconButton icon={<SmallAddIcon />}
+                                                            onClick={
+                                                                () => {
+                                                                    if (droneCart.some(item => item.mediID === med.mediID)) {
+                                                                        // update quantity
+                                                                        setDroneCart(droneCart.map(item => item.mediID === med.mediID ? { ...item, quantity: item.quantity + 1 } : item))
+                                                                    } else {
+                                                                        // add med with quantity 1
+                                                                        setDroneCart([...droneCart, { ...med, quantity: 1 }])
+                                                                    }
 
-                                                        }
-                                                    } colorScheme={'messenger'} /></Td>
+                                                                }
+                                                            } colorScheme={'messenger'} /></Td>
+                                                    )
+                                                }
+
                                             </Tr>
-                                            </>
+
                                         ))
                                     }
 
@@ -367,67 +536,69 @@ const Overview = () => {
 
                         </Flex>
                     </Flex>
-
-                    <Flex flexDirection={'column'} flex={1} colSpan={4} height={'100%'} width={'100%'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'center'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} w={'40%'}>
-                        <Text>
-                            Max Weight Supported is 500g
-                        </Text>
-                        <Flex gap={'20px'} flexDirection={'column'} overflowY={'auto'} flex={1} width={'100%'} maxHeight={'70vh'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'20px'} border={'1px solid #82828245'} >
-
-                            {droneCart.length > 0 ? (
-
-                                droneCart.map((item) => (
-
-                                    <Card>
-                                        <CardBody display={'flex'} alignItems={'center'} flexDirection={'row'} justifyContent={'space-between'} gap={'10px'}>
-                                            <Flex flexDirection={'row'} gap={'10px'} width={'80%'} alignItems={'center'} justifyContent={'space-between'}>
-                                                <Flex flexDirection={'column'}>
-
-                                                    <Text fontSize={'18px'} fontWeight={'medium'}>{item.name}</Text>
-                                                    <Text fontSize={'14px'} fontWeight={'normal'}>{item.medID}</Text>
-                                                </Flex>
-                                                <Flex flexDirection={'column'} alignItems={'center'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'5px'} >
-                                                    <Text fontSize={'18px'} fontWeight={'medium'}> {item.weight}g</Text>
-                                                    <Text fontSize={'14px'} fontWeight={'normal'}>Weight</Text>
-
-                                                </Flex>
-                                                <Text fontSize={'14px'} fontWeight={''}>Quantity: {item.quantity}</Text>
-                                            </Flex>
-                                            <IconButton onClick={
-                                                () => {
-                                                    setDroneCart(droneCart.filter((med) => med.mediID !== item.mediID))
-                                                }
-                                            }
-                                                aria-label='Remove Item' icon={<DeleteIcon />} colorScheme={'red'} />
-
-                                        </CardBody>
-
-                                    </Card>
-
-
-
-                                )
-                                ))
-                                : (
-                                    <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
-                                        <Text opacity={'0.5'} fontWeight={'normal'}> No Items have been added to the cart</Text>
-                                    </Flex>
-                                )
-                            }
-                        </Flex>
-                        <Flex flexDirection={'row'} gap={'10px'} width={'100%'} alignItems={'center'} justifyContent={'space-between'}>
+                    {isLargerThan480 ? (
+                        <Flex flexDirection={'column'} flex={1} colSpan={4} height={'100%'} width={'100%'} justifyContent={'space-between'} borderRadius={'10px'} alignItems={'center'} p={'20px'} backgroundColor={'white'} borderTopLeftRadius={'0px'} borderBottomLeftRadius={'0px'} borderRight={'1px solid #E5E7EB'} w={'40%'}>
                             <Text>
-                                Total Weight:&nbsp;<Text color={totalWeight > 500 ? 'red' : 'black'} fontWeight={'medium'} display={'inline'}>{totalWeight}g</Text>
-
+                                Max Weight Supported is 500g
                             </Text>
-                            <Button isDisabled={totalWeight > 500 || droneCart.length == 0} colorScheme='messenger' fontWeight={'medium'}
-                                onClick={() => {
-                                    next()
-                                }}>
-                                Next
-                            </Button>
+                            <Flex gap={'20px'} flexDirection={'column'} overflowY={'auto'} flex={1} width={'100%'} maxHeight={'70vh'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'20px'} border={'1px solid #82828245'} >
+
+                                {droneCart.length > 0 ? (
+
+                                    droneCart.map((item) => (
+
+                                        <Card>
+                                            <CardBody display={'flex'} alignItems={'center'} flexDirection={'row'} justifyContent={'space-between'} gap={'10px'}>
+                                                <Flex flexDirection={'row'} gap={'10px'} width={'80%'} alignItems={'center'} justifyContent={'space-between'}>
+                                                    <Flex flexDirection={'column'}>
+
+                                                        <Text fontSize={'18px'} fontWeight={'medium'}>{item.name}</Text>
+                                                        <Text fontSize={'14px'} fontWeight={'normal'}>{item.medID}</Text>
+                                                    </Flex>
+                                                    <Flex flexDirection={'column'} alignItems={'center'} backgroundColor={'#E5E7EB'} borderRadius={'10px'} p={'5px'} >
+                                                        <Text fontSize={'18px'} fontWeight={'medium'}> {item.weight}g</Text>
+                                                        <Text fontSize={'14px'} fontWeight={'normal'}>Weight</Text>
+
+                                                    </Flex>
+                                                    <Text fontSize={'14px'} fontWeight={''}>Quantity: {item.quantity}</Text>
+                                                </Flex>
+                                                <IconButton onClick={
+                                                    () => {
+                                                        setDroneCart(droneCart.filter((med) => med.mediID !== item.mediID))
+                                                    }
+                                                }
+                                                    aria-label='Remove Item' icon={<DeleteIcon />} colorScheme={'red'} />
+
+                                            </CardBody>
+
+                                        </Card>
+
+
+
+                                    )
+                                    ))
+                                    : (
+                                        <Flex justifyContent={'center'} alignItems={'center'} height={'100%'}>
+                                            <Text opacity={'0.5'} fontWeight={'normal'}> No Items have been added to the cart</Text>
+                                        </Flex>
+                                    )
+                                }
+                            </Flex>
+                            <Flex flexDirection={'row'} gap={'10px'} width={'100%'} alignItems={'center'} justifyContent={'space-between'}>
+                                <Text>
+                                    Total Weight:&nbsp;<Text color={totalWeight > 500 ? 'red' : 'black'} fontWeight={'medium'} display={'inline'}>{totalWeight}g</Text>
+
+                                </Text>
+                                <Button isDisabled={totalWeight > 500 || droneCart.length == 0} colorScheme='messenger' fontWeight={'medium'}
+                                    onClick={() => {
+                                        next()
+                                    }}>
+                                    Next
+                                </Button>
+                            </Flex>
                         </Flex>
-                    </Flex>
+                    ) : null}
+
                 </>
             ) : pageNo == 2 ? (
                 <>
@@ -488,39 +659,39 @@ const Overview = () => {
                                 Enter Delivery Details
                             </Heading>
                             <Flex flexDirection={'column'} gap={'20px'} width={'100%'} p={'20px'}>
-                                <Flex gap={'10px'}>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                <Flex gap={'10px'} flexDirection={isLargerThan480 ? 'row' : 'column'}>
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>First Name</FormLabel>
                                         <Input placeholder="eg: John" value={firstname} onChange={(e) => setFirstname(e.target.value)} />
                                     </InputGroup>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>Last Name</FormLabel>
                                         <Input placeholder="eg: Appleseed" value={lastname} onChange={(e) => setLastname(e.target.value)} />
                                     </InputGroup>
                                 </Flex>
-                                <Flex gap={'10px'}>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                <Flex gap={'10px'} flexDirection={isLargerThan480 ? 'row' : 'column'}>
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>Address Line 1</FormLabel>
                                         <Input placeholder="eg: 123, Main Street" value={address1} onChange={(e) => setAddress1(e.target.value)} />
                                     </InputGroup>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>Address Line 2</FormLabel>
                                         <Input placeholder="eg: Temple Road" value={address2} onChange={(e) => setAddress2(e.target.value)} />
                                     </InputGroup>
                                 </Flex>
                                 <Flex gap={'10px'}>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>City</FormLabel>
                                         <Input placeholder="eg: 123, Main Street" value={city} onChange={(e) => setCity(e.target.value)} />
                                     </InputGroup>
 
                                 </Flex>
-                                <Flex gap={'10px'}>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                <Flex gap={'10px'} flexDirection={isLargerThan480 ? 'row' : 'column'}>
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>Mobile No.</FormLabel>
                                         <Input placeholder="eg: 0771231234" value={mobile} onChange={(e) => setMobile(e.target.value)} />
                                     </InputGroup>
-                                    <InputGroup flexDirection={'column'} width={'50%'} >
+                                    <InputGroup flexDirection={'column'} width={isLargerThan480 ? '50%' : '100%'}>
                                         <FormLabel>E-Mail Address</FormLabel>
                                         <Input placeholder="eg: john@droneaid.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                                     </InputGroup>
@@ -571,7 +742,7 @@ const Overview = () => {
                 </>
             ) : null
             }
-        </Card>
+        </Card >
 
     )
 }
