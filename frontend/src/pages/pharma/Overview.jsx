@@ -532,7 +532,7 @@ const Overview = () => {
                                 </Thead>
                                 <Tbody>
                                     {
-                                        medicine.map((med) => (
+                                        medicine?.map((med) => (
                                             <Tr key={med.mediID}
                                                 onClick={
                                                     isLargerThan480 ? null : () => {
