@@ -1,205 +1,231 @@
-import express from 'express';
+import express, { query } from 'express';
 const router = express.Router();
 
-router.get('/alldrones', (req, res) => {
-    const drones = [
-        {
-            id: 1,
-            name: 'drone1',
-            model: 'model1',
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'drone2',
-            model: 'model2',
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'drone3',
-            model: 'model3',
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'drone4',
-            model: 'model4',
-            status: 'active'
-        },
-        {
-            id: 5,
-            name: 'drone5',
-            model: 'model5',
-            status: 'active'
-        },
-        {
-            id: 6,
-            name: 'drone6',
-            model: 'model6',
-            status: 'active'
-        },
-        {
-            id: 7,
-            name: 'drone7',
-            model: 'model7',
-            status: 'active'
-        },
-        {
-            id: 8,
-            name: 'drone8',
-            model: 'model8',
-            status: 'active'
-        },
-        {
-            id: 9,
-            name: 'drone9',
-            model: 'model9',
-            status: 'active'
-        },
-        {
-            id: 10,
-            name: 'drone10',
-            model: 'model10',
-            status: 'active'
+import { Drones } from '../models/droneModel.js';
+import { Logs } from '../models/droneModel.js';
+import DroneModels from '../models/TypeModel.js';
+import MediOrder from '../models/mediOrderModel.js';
+
+const generateRandomSerial = () => {
+    const serial = Math.random().toString(36).substring(2, 8) + Math.random().toString(36).substring(2, 8);
+    return serial;
+}
+
+export const generateLog = async (droneUUID, event_name, description) => {
+    if (droneUUID === 'all') {
+        const drones = await Drones.find({ isDeleted: false });
+        drones.forEach(async (drone) => {
+            const log = new Logs({
+                event: event_name,
+                description: "Battery Level is " + drone.battery + "%",
+            });
+            // push to first position of array
+            await Drones.findOneAndUpdate({ uuid: drone.uuid }, {
+                $push: {
+                    logs: {
+                        $each: [log], $position: 0, $slice: 30
+                    }
+                }
+            });
+        });
+        return;
+    } else {
+        const log = new Logs({
+            event: event_name,
+            description: description,
+        });
+        await Drones.findOneAndUpdate({ uuid: droneUUID }, {
+            $push: {
+                logs: {
+                    $each: [log], $position: 0, $slice: 30
+                }
+            }
+        });
+
+        return;
+    }
+
+
+};
+
+export const changeStatus = async (droneUUID, status) => {
+
+    const drone = await Drones.findOne({ uuid: droneUUID });
+    console.log(status);
+    console.log(drone.status);
+
+    let event_name = 'STATUS_CHANGE_EVENT';
+
+    if (drone) {
+        let prevStatus = drone.status;
+        if (status === 'idle') {
+            if (drone.status === 'charging') {
+                drone.lastCharged = Date.now();
+                event_name = 'CHARGE_REMOVE_EVENT';
+
+                drone.status = 'idle';
+            } else if (drone.status === 'returning' || drone.status === 'loading' || drone.status === 'loaded') {
+                drone.status = 'idle';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'loading') {
+            if (((drone.status === 'idle') && (drone.battery >= 25)) || drone.status === 'loaded') {
+                drone.status = 'loading';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'delivering') {
+            if (drone.status === 'loaded' || drone.status === 'loading') {
+                drone.status = 'delivering';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'delivered') {
+            if (drone.status === 'delivering') {
+                drone.status = 'delivered';
+                const order = await MediOrder.findOne({ droneUUID: droneUUID });
+                order.status = 'delivered';
+                await order.save();
+
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+
+        } else if (status === 'returning') {
+            if (drone.status === 'delivered') {
+                drone.status = 'returning';
+                console.log('test');
+
+            }
+            else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else if (status === 'charging') {
+            if (drone.status === 'idle') {
+                drone.status = 'charging';
+                event_name = 'CHARGE_EVENT';
+            } else {
+                return { message: 'Invalid status', status: 'error' };
+            }
+        } else {
+            return { message: 'Invalid status', status: 'error' };
         }
-    ];
-    res.status(200).json(drones);
+
+        generateLog(drone.uuid, event_name, `Status changed from ${prevStatus} to ${drone.status}`);
+
+        await drone.save();
+        return { message: 'Status changed successfully', status: 'success' };
+    } else {
+        return { message: 'Drone not found', status: 'error' };
+    }
+}
+
+router.put('/changestatus', async (req, res) => {
+    const { droneUUID, status } = req.body;
+    const resp = await changeStatus(droneUUID, status);
+    // console.log(resp);
+    res.status(200).json(resp);
 });
 
-router.get('/drones/:id', (req, res) => {
-    const drones = [
-        {
-            id: 1,
-            name: 'drone1',
-            model: 'model1',
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'drone2',
-            model: 'model2',
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'drone3',
-            model: 'model3',
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'drone4',
-            model: 'model4',
-            status: 'active'
-        },
-        {
-            id: 5,
-            name: 'drone5',
-            model: 'model5',
-            status: 'active'
-        },
-        {
-            id: 6,
-            name: 'drone6',
-            model: 'model6',
-            status: 'active'
-        },
-        {
-            id: 7,
-            name: 'drone7',
-            model: 'model7',
-            status: 'active'
-        },
-        {
-            id: 8,
-            name: 'drone8',
-            model: 'model8',
-            status: 'active'
-        },
-        {
-            id: 9,
-            name: 'drone9',
-            model: 'model9',
-            status: 'active'
-        },
-        {
-            id: 10,
-            name: 'drone10',
-            model: 'model10',
-            status: 'active'
-        }
-    ];
-    console.log(req.params.id);
+router.get('/alldrones/:filter', async (req, res) => {
+    const filter = req.params.filter;
+    console.log(filter);
+    if (filter === 'all') {
+        const drones = await Drones.find({ isDeleted: false }).populate('_model');
+        // console.log(drones);
+        res.status(200).json(drones);
+    } else {
+        const drones = await Drones.find({ isDeleted: false, status: filter }).populate('_model');
+        // console.log(drones);
+        res.status(200).json(drones);
+    }
+}
+);
 
-    const drone = drones.find((d) => d.id === parseInt(req.params.id));
+router.get('/recommend', async (req, res) => {
 
-    if (!drone) res.status(404).send('Drone not found');
+    const weight = req.query.weight;
+    console.log(req.query);
+
+    const drones = await Drones.find({ isDeleted: false, status: 'idle' })
+        .populate({
+            model: 'dronemodels',
+            path: '_model',
+            match: { maxWeight: { $gte: weight } }
+        });
+
+    // Filter out the drones whose _model field is null
+    const filteredDrones = drones.filter(drone => drone._model !== null);
+
+    res.status(200).json(filteredDrones);
+    // res.status(200).json(drones);
+});
+
+
+
+
+router.get('/drones/:id', async (req, res) => {
+
+    const drone = await Drones.find({ uuid: req.params.id }).populate('_model');
     console.log(drone);
-
-
-    res.json(drone);
+    res.json(drone[0]);
 });
 
-router.get('/models', (req, res) => { 
-    const models = [{
-        id: 1,
-        name: 'model1',
-        description: 'description1'
-    },
-    {
-        id: 2,
-        name: 'model2',
-        description: 'description2'
-    },
-    {
-        id: 3,
-        name: 'model3',
-        description: 'description3'
-    },
-    {
-        id: 4,
-        name: 'model4',
-        description: 'description4'
-    },
-    {
-        id: 5,
-        name: 'model5',
-        description: 'description5'
-    },
-    {
-        id: 6,
-        name: 'model6',
-        description: 'description6'
-    },
-    {
-        id: 7,
-        name: 'model7',
-        description: 'description7'
-    },
-    {
-        id: 8,
-        name: 'model8',
-        description: 'description8'
-    },
-    {
-        id: 9,
-        name: 'model9',
-        description: 'description9'
-    },
-    {
-        id: 10,
-        name: 'model10',
-        description: 'description10'
 
-    }]
-    
+
+router.get('/models', async (req, res) => {
+    const models = await DroneModels.find();
+    console.log(models);
     res.json(models);
-});   
-
-router.post('/register', (req, res) => { 
-    console.log(req.body);
-    res.send('Drone registered');
 });
 
-export default router;
+router.post('/register', async (req, res) => {
+    console.log(req.body);
+
+    // const model = req.body.model;
+
+    const modelFound = await DroneModels.findOne({ modelID: req.body.model });
+    console.log(modelFound);
+    console.log(modelFound._id);
+    const serialFound = await Drones.findOne({ serial: req.body.serial });
+    console.log(serialFound);
+    if (serialFound) {
+        return res.status(400).json({ message: 'Serial already registered', status: 'error' });
+    }
+
+    var newDrone = new Drones({
+        uuid: generateRandomSerial(),
+        serial: req.body.serial,
+        name: req.body.name,
+        _model: modelFound._id
+    });
+
+    const drone = await newDrone.save();
+    // console.log(drone);
+
+    res.status(200).json({ message: 'Drone registered successfully', status: 'success' });
+});
+
+
+
+
+router.patch('/drones/:id', async (req, res) => {
+
+    const drone = await Drones.findOneAndUpdate({ uuid: req.params.id }, { isDeleted: true }, { new: true });
+
+    console.log(drone);
+    // if (!drone) res.status(404).send('Drone not found');
+    res.send('Drone deleted');
+});
+
+router.get('/logs/:id', async (req, res) => {
+
+    const drone = await Drones.findOne({ uuid: req.params.id });
+
+    // console.log(drone);
+    res.json(drone.logs);
+});
+
+
+export default router

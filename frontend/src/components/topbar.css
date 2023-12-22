@@ -1,6 +1,11 @@
-.active{
+.active {
     border-bottom: 3px solid #fff;
     padding-bottom: 5px;
-
-    color: white;
+    color: rgb(255, 255, 255);
+}
+.active.mobile {
+    border-bottom: 3px solid #fff;
+    padding-bottom: 5px;
+    font-weight: bold;
+    color: rgb(91, 25, 81);
 }

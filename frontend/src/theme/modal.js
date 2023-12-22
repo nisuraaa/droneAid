@@ -1,0 +1,40 @@
+import { modalAnatomy as parts } from '@chakra-ui/anatomy'
+import { createMultiStyleConfigHelpers } from '@chakra-ui/styled-system'
+
+const { definePartsStyle, defineMultiStyleConfig } =
+  createMultiStyleConfigHelpers(parts.keys)
+
+const baseStyle = definePartsStyle({
+  // define the part you're going to style
+  overlay: {
+    // bg: 'blackAlpha.200', //change the background
+  },
+  dialog: {
+    borderRadius: 'xl',
+
+  },
+})
+
+
+const reviewModal = definePartsStyle({
+
+  dialog: {
+    borderRadius: 'xl',
+
+    minHeight: '60vh',
+    maxWidth: '60vw',
+    // bg: `purple.100`,
+
+    // Let's also provide dark mode alternatives
+    _dark: {
+      bg: `purple.600`,
+      color: 'white',
+    },
+  },
+})
+
+
+export const modalTheme = defineMultiStyleConfig({
+  variants: { reviewModal},
+  baseStyle,
+})
