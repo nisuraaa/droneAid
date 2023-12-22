@@ -608,42 +608,71 @@ function DroneRegister({ getDrones }) {
 
         }
     }
-    const onSubmit = async () => {
-        const accessToken = await getAccessToken();
-        const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + accessToken,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(
 
-                {
-                    "serial": serial,
-                    "model": model,
-                    "name": name
-                }
-            )
-        })
-            .then((response) => {
-                // console.log(response.status)
-                if (response.status == 200) {
+    const handleSubmit = async () => {
+        // validation goes here
+        // console.log(serial, model, name);
+        if (!serial || !model || !name) {
+            toast({
+                title: 'Error',
+                description: 'Please fill all the fields',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        if (serial.length < 8) {
+            toast({
+                title: 'Error',
+                description: 'Serial Number should be atleast 8 characters long',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
 
-                    onClose();
-                    toast({
-                        title: 'Drone Registered Successfully .',
-                        // description: "We've created your account for you.",
-                        position: 'bottom-right',
-                        status: 'success',
-                        duration: 5000,
-                        // isClosable: true,
-                    });
-                    getDrones();
-                }
-            })
+    };
+
+    // const onSubmit = async () => {
+    //     const accessToken = await getAccessToken();
+    //     const response = await fetch(window.config.choreoApiUrl + '/drone/register', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Authorization': 'Bearer ' + accessToken,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(
+
+    //             {
+    //                 "serial": serial,
+    //                 "model": model,
+    //                 "name": name
+    //             }
+    //         )
+    //     })
+    //         .then((response) => {
+    //             // console.log(response.status)
+    //             if (response.status == 200) {
+
+    //                 onClose();
+    //                 toast({
+    //                     title: 'Drone Registered Successfully .',
+    //                     // description: "We've created your account for you.",
+    //                     position: 'bottom-right',
+    //                     status: 'success',
+    //                     duration: 5000,
+    //                     // isClosable: true,
+    //                 });
+    //                 getDrones();
+    //             }
+    //         })
 
 
-    }
+    // }
 
     return (
         <>
@@ -680,7 +709,7 @@ function DroneRegister({ getDrones }) {
                     </ModalBody>
                     <ModalFooter >
                         <Button onClick={onClose} mr={'5px'} >Close</Button>
-                        <Button onClick={onSubmit} variant='solid' colorScheme='messenger'>Add</Button>
+                        <Button onClick={handleSubmit} variant='solid' colorScheme='messenger'>Add</Button>
 
                     </ModalFooter>
                 </ModalContent>
@@ -723,7 +752,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone, selecte
 
     return (
         <>
-            <Button colorScheme='red' onClick={onOpen} isDisabled={ selectedDrone?.status === 'idle' ? false : true}>
+            <Button colorScheme='red' onClick={onOpen} isDisabled={selectedDrone?.status === 'idle' ? false : true}>
                 Remove
             </Button>
 
@@ -752,7 +781,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone, selecte
                                 () => {
                                     deleteFn();
                                 }
-                            } colorScheme='red' ml={3} isDisabled={ selectedDrone?.status === 'idle' ? false : true}>
+                            } colorScheme='red' ml={3} isDisabled={selectedDrone?.status === 'idle' ? false : true}>
                                 Delete
                             </Button>
                         </AlertDialogFooter>

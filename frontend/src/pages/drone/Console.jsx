@@ -351,7 +351,10 @@ const Overview = () => {
             <Heading >
               <Text fontSize={'18px'}>Drones</Text>
             </Heading>
-            <DroneRegister getDrones={getdrones} />
+
+        <Button onClick={() => {
+          signOut();
+        }}>Sign Out</Button>
           </Flex>
 
           <Flex gap={'5px'}>

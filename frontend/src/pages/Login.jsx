@@ -37,7 +37,9 @@ const Login = () => {
       );
     }
     else {
-      signIn()
+      setTimeout(() => {
+        signIn();
+      }, 2000);
     }
   }, [isAuthenticated]);
 

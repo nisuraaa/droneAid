@@ -114,6 +114,42 @@ const Overview = () => {
     const [city, setCity] = useState('');
     const [mobile, setMobile] = useState('');
     const [email, setEmail] = useState('');
+
+    const validate = async () => {
+        if (firstname == '' || lastname == '' || address1 == '' || address2 == '' || city == '' || mobile == '' || email == '') {
+            toast({
+                title: "Error",
+                description: "Please fill all the fields",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            return;
+        } 
+        if (mobile.length != 10) {
+            toast({
+                title: "Error",
+                description: "Mobile number should be 10 digits",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            return;
+        }
+        if (email.indexOf('@') == -1) {
+            toast({
+                title: "Error",
+                description: "Invalid Email",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+            })
+            return;
+        }
+        submitOrder();
+    }
+
+
     const submitOrder = async () => {
         const [accessToken] = await getAccessToken();
 
@@ -709,7 +745,7 @@ const Overview = () => {
                                     Previous
                                 </Button>
                                 <Button {...totalWeight > 500 ? { disabled: true } : {}} onClick={() => {
-                                    submitOrder();
+                                   validate();
 
                                 }} colorScheme='messenger' fontWeight={'medium'}>
                                     Finish

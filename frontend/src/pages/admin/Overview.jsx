@@ -201,23 +201,41 @@ const Overview = () => {
                                                             <TabPanel>
                                                                 <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'} minWidth={'79vw'}>
 
-                                                                    <Flex flexDirection={'column'} gap={'0px'}>
-                                                                        <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
-                                                                        <Text ml={'10px'}>
-                                                                            {droneData?.serial}
-                                                                        </Text>
-                                                                    </Flex>
-                                                                    <Flex flexDirection={'column'} gap={'0px'}>
-                                                                        <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
-                                                                        <Text ml={'10px'}>
-                                                                            {droneData?._model?.name}
-                                                                        </Text>
-                                                                    </Flex>
-                                                                    <Flex flexDirection={'column'} gap={'0px'}>
-                                                                        <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
-                                                                        <Text ml={'10px'}>
-                                                                            {droneData?._model?.maxWeight} g
-                                                                        </Text>
+
+                                                                    <Flex flexDirection={'row'} borderRadius={'10px'} flex={1} gap={'10px'} >
+                                                                        <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+
+                                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
+                                                                                <Text ml={'10px'}>
+                                                                                    {droneData?.serial}
+                                                                                </Text>
+                                                                            </Flex>
+                                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
+                                                                                <Text ml={'10px'}>
+                                                                                    {droneData?._model?.name}
+                                                                                </Text>
+                                                                            </Flex>
+                                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
+                                                                                <Text ml={'10px'}>
+                                                                                    {droneData?._model?.maxWeight} g
+                                                                                </Text>
+                                                                            </Flex>
+                                                                        </Flex>
+
+                                                                        <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+
+                                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Date Registered</Heading>
+                                                                                <Text ml={'10px'}>
+                                                                                    {droneData?.createdAt.split('T')[0] + ' ' + droneData?.createdAt.split('T')[1].split('.')[0]}
+                                                                                </Text>
+                                                                            </Flex>
+
+                                                                        </Flex>
+
                                                                     </Flex>
 
 
@@ -462,28 +480,41 @@ const Overview = () => {
                                             <Flex flexDirection={'row'} gap={'10px'}>
                                                 <Flex flexDirection={'column'} gap={'10px'} width={'50%'}>
 
-                                                    <Flex flexDirection={'column'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
-                                                        <Flex flexDirection={'column'} gap={'0px'}>
-                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
-                                                            <Text ml={'10px'}>
-                                                                {droneData?.serial}
-                                                            </Text>
+                                                    <Flex flexDirection={'row'} border={'1px solid #E5E7EB'} borderRadius={'10px'} flex={1} gap={'10px'} p={'30px'}>
+                                                        <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+
+                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Serial Number</Heading>
+                                                                <Text ml={'10px'}>
+                                                                    {droneData?.serial}
+                                                                </Text>
+                                                            </Flex>
+                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
+                                                                <Text ml={'10px'}>
+                                                                    {droneData?._model?.name}
+                                                                </Text>
+                                                            </Flex>
+                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
+                                                                <Text ml={'10px'}>
+                                                                    {droneData?._model?.maxWeight} g
+                                                                </Text>
+                                                            </Flex>
                                                         </Flex>
-                                                        <Flex flexDirection={'column'} gap={'0px'}>
-                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Model</Heading>
-                                                            <Text ml={'10px'}>
-                                                                {droneData?._model?.name}
-                                                            </Text>
-                                                        </Flex>
-                                                        <Flex flexDirection={'column'} gap={'0px'}>
-                                                            <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Max Carry Weight</Heading>
-                                                            <Text ml={'10px'}>
-                                                                {droneData?._model?.maxWeight} g
-                                                            </Text>
+
+                                                        <Flex flexDirection={'column'} width={'50%'} gap={'10px'}>
+
+                                                            <Flex flexDirection={'column'} gap={'0px'}>
+                                                                <Heading fontWeight={'700'} fontSize={'10px'} ml={'10px'}>Date Registered</Heading>
+                                                                <Text ml={'10px'}>
+                                                                    {droneData?.createdAt.split('T')[0] + ' ' + droneData?.createdAt.split('T')[1].split('.')[0]}
+                                                                </Text>
+                                                            </Flex>
+
                                                         </Flex>
 
                                                     </Flex>
-
                                                     <Flex gap={'10px'}>
 
                                                         <LogModal uuid={droneData?.uuid} />
@@ -566,6 +597,71 @@ function DroneRegister({ getDrones }) {
     const [serial, setSerial] = useState(null);
     const [model, setModel] = useState([]);
     const [name, setName] = useState(null);
+    const handleSubmit = async () => {
+        // validation goes here
+        // console.log(serial, model, name);
+        if (!serial || !model || !name) {
+            toast({
+                title: 'Error',
+                description: 'Please fill all the fields',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        if (serial.length > 100) {
+            toast({
+                title: 'Error',
+                description: 'Serial Number should be atleast 8 characters long',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        if (serial.length < 8) {
+            toast({
+                title: 'Error',
+                description: 'Serial Number should be atleast 8 characters long',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        if (serial.name > 100) {
+            toast({
+                title: 'Error',
+                description: 'Serial Number should be less than 100 characters long',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        // dont allow lowercase letters in serial number
+        if (serial.match(/[a-z]/)) {
+            toast({
+                title: 'Error',
+                description: 'Serial Number should not contain lowercase letters',
+                position: 'bottom-right',
+                status: 'error',
+                duration: 5000,
+                // isClosable: true,
+            });
+            return;
+        }
+        onSubmit();
+
+
+    };
+
+
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [modelData, setModelData] = useState([]);
     useEffect(() => {
@@ -598,7 +694,6 @@ function DroneRegister({ getDrones }) {
                         });
                         return;
                     } else {
-
                         setModelData(data);
                     }
                 })
@@ -625,10 +720,11 @@ function DroneRegister({ getDrones }) {
                 }
             )
         })
+            .then((response) => response.json())
             .then((response) => {
                 // console.log(response.status)
-                if (response.status == 200) {
-
+                console.log(response);
+                if (response.status == 'success') {
                     onClose();
                     toast({
                         title: 'Drone Registered Successfully .',
@@ -639,6 +735,16 @@ function DroneRegister({ getDrones }) {
                         // isClosable: true,
                     });
                     getDrones();
+                } else {
+                    console.log(response.message);
+                    toast({
+                        title: 'Error',
+                        description: response.message,
+                        position: 'bottom-right',
+                        status: 'error',
+                        duration: 5000,
+                        // isClosable: true,
+                    });
                 }
             })
 
@@ -680,7 +786,7 @@ function DroneRegister({ getDrones }) {
                     </ModalBody>
                     <ModalFooter >
                         <Button onClick={onClose} mr={'5px'} >Close</Button>
-                        <Button onClick={onSubmit} variant='solid' colorScheme='messenger'>Add</Button>
+                        <Button onClick={handleSubmit} variant='solid' colorScheme='messenger'>Add</Button>
 
                     </ModalFooter>
                 </ModalContent>
@@ -723,7 +829,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone, selecte
 
     return (
         <>
-            <Button colorScheme='red' onClick={onOpen} isDisabled={ selectedDrone?.status === 'idle' ? false : true}>
+            <Button colorScheme='red' onClick={onOpen} isDisabled={selectedDrone?.status === 'idle' ? false : true}>
                 Remove
             </Button>
 
@@ -752,7 +858,7 @@ function DeleteDialog({ uuid, getdrones, setDroneData, setSelectedDrone, selecte
                                 () => {
                                     deleteFn();
                                 }
-                            } colorScheme='red' ml={3} isDisabled={ selectedDrone?.status === 'idle' ? false : true}>
+                            } colorScheme='red' ml={3} isDisabled={selectedDrone?.status === 'idle' ? false : true}>
                                 Delete
                             </Button>
                         </AlertDialogFooter>

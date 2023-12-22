@@ -62,6 +62,7 @@ export const changeStatus = async (droneUUID, status) => {
             if (drone.status === 'charging') {
                 drone.lastCharged = Date.now();
                 event_name = 'CHARGE_REMOVE_EVENT';
+
                 drone.status = 'idle';
             } else if (drone.status === 'returning' || drone.status === 'loading' || drone.status === 'loaded') {
                 drone.status = 'idle';
@@ -96,7 +97,7 @@ export const changeStatus = async (droneUUID, status) => {
                 drone.status = 'returning';
                 console.log('test');
 
-            } 
+            }
             else {
                 return { message: 'Invalid status', status: 'error' };
             }
@@ -187,6 +188,11 @@ router.post('/register', async (req, res) => {
     const modelFound = await DroneModels.findOne({ modelID: req.body.model });
     console.log(modelFound);
     console.log(modelFound._id);
+    const serialFound = await Drones.findOne({ serial: req.body.serial });
+    console.log(serialFound);
+    if (serialFound) {
+        return res.status(400).json({ message: 'Serial already registered', status: 'error' });
+    }
 
     var newDrone = new Drones({
         uuid: generateRandomSerial(),
@@ -198,7 +204,7 @@ router.post('/register', async (req, res) => {
     const drone = await newDrone.save();
     // console.log(drone);
 
-    res.send('Drone registered');
+    res.status(200).json({ message: 'Drone registered successfully', status: 'success' });
 });
 
 
