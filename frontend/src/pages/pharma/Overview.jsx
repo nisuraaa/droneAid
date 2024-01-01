@@ -210,7 +210,7 @@ const Overview = () => {
     const [availableDrones, setAvailableDrones] = useState([]);
 
     const getMedicine = async () => {
-        const [accessToken] = await getAccessToken();
+        const accessToken = await getAccessToken(); 
         console.log(accessToken);
 
         const response = await fetch(window.config.choreoApiUrl + '/medi/all', {
