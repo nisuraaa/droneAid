@@ -211,6 +211,7 @@ const Overview = () => {
 
     const getMedicine = async () => {
         const [accessToken] = await getAccessToken();
+        console.log(accessToken);
 
         const response = await fetch(window.config.choreoApiUrl + '/medi/all', {
             method: 'GET',
