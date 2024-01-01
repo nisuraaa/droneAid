@@ -151,7 +151,7 @@ const Overview = () => {
 
 
     const submitOrder = async () => {
-        const [accessToken] = await getAccessToken();
+        const accesstoken = await getAccessToken();
 
         const response = await fetch(window.config.choreoApiUrl + '/medi/createorder', {
             method: 'POST',
@@ -283,7 +283,7 @@ const Overview = () => {
     }
 
     const LoadUnloadDrone = async (droneUUID, status) => {
-        const [accessToken] = await getAccessToken();
+        const accessToken = await getAccessToken();
         const response = await fetch(window.config.choreoApiUrl + '/drone/changestatus', {
 
             method: 'PUT',
