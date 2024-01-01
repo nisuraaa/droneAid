@@ -16,7 +16,7 @@ router.get('/all', async (req, res) => {
 
     const allMeds = await medicine.find();
     console.log(allMeds)
-    res.status(401).json(allMeds);
+    res.json(allMeds);
 });
 
 
